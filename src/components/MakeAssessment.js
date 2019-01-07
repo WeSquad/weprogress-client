@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import gql from 'graphql-tag';
+import { Typography } from '@material-ui/core';
 import { Query } from 'react-apollo';
 
 const ME_QUERY = gql`
@@ -16,24 +17,29 @@ const ME_QUERY = gql`
 
 
 class MakeAssessment extends Component {
+  state = {
+    chosenJobId: 0,
+  };
+
   render() {
+    const { chosenJobId } = this.state;
+
     return (
-      <Query query={ME_QUERY}>
-        {({ loading, error, data }) => {
-          if (loading) return "Chargement...";
-          if (error) return `Error! ${error.message}`;
+      <div>
+        <Typography variant="h4" gutterBottom component="h2">
+          M'auto-évaluer
+        </Typography>
+        <Query query={ME_QUERY}>
+          {({ loading, error, data }) => {
+            if (loading) return "Chargement...";
+            if (error) return `Error! ${error.message}`;
 
-          if (data.me.job === null) {
             return (
-              <div>Aucun job détecté. Merci de remplir votre profil</div>
+                <div>Aucun job défini. Merci de remplir votre profil et préciser quel job vous voulez évaluer.</div>
             );
-          }
-
-          return (
-            <div>Votre job: {data.me.jobs[0].name}</div>
-          );
-        }}
-      </Query>
+          }}
+        </Query>
+      </div>
     );
   }
 }

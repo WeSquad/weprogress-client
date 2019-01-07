@@ -25,7 +25,7 @@ class InsideDrawer extends Component {
                 <ListItemText primary="Dashboard" />
               </ListItem>
             </Link>
-            <Link to="/makeassessment" className={classes.menuLink}>
+            <Link to="/" className={classes.menuLink}>
               <ListItem button>
                 <ListItemIcon>
                   <BarChart />
@@ -33,7 +33,7 @@ class InsideDrawer extends Component {
                 <ListItemText primary="Mes évaluations" />
               </ListItem>
             </Link>
-            <Link to="/album" className={classes.menuLink}>
+            <Link to="/makeassessment" className={classes.menuLink}>
               <ListItem button>
                 <ListItemIcon>
                   <Layers />

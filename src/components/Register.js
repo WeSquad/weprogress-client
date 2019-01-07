@@ -36,7 +36,11 @@ class Register extends Component {
     const { classes } = this.props;
 
     const handleError = error => {
-      this.setState({ errorMsg: error.graphQLErrors[0].message});
+      if (error.graphQLErrors[0]) {
+        this.setState({ errorMsg: error.graphQLErrors[0].message});
+      } else {
+        this.setState({ errorMsg: 'Enregistrement impossible'});
+      }
     };
 
     return (
@@ -50,7 +54,7 @@ class Register extends Component {
           </Typography>
             <Mutation
                 mutation={REGISTER_MUTATION}
-                variables={{ email, firstName, lastName, password }}
+                variables={{ 'input': { email, firstName, lastName, password }}}
                 onCompleted={data => this._confirm(data)}
                 onError={error => handleError(error)}
             >

@@ -12,8 +12,8 @@ import Dashboard from './Dashboard';
 import MakeAssessment from './MakeAssessment';
 import SignIn from './SignIn';
 import Register from './Register';
-import Album from './Album';
 import InsideDrawer from './InsideDrawer';
+import Profile from './Profile';
 import { layoutStyles } from '../styles/Wetheme';
 import { AUTH_TOKEN } from '../constants';
 
@@ -42,6 +42,11 @@ class Layout extends Component {
 
   handleSignin = () => {
     this.props.history.push('/signin');
+    this.setState({ anchorEl: null });
+  }
+
+  handleProfile = () => {
+    this.props.history.push('/profile');
     this.setState({ anchorEl: null });
   }
 
@@ -102,7 +107,7 @@ class Layout extends Component {
                 open={openProfil}
                 onClose={this.handleClose}
               >
-                <MenuItem onClick={this.handleClose} className={classes.menuItem}>Mon compte</MenuItem>
+                <MenuItem onClick={this.handleProfile} className={classes.menuItem}>Mon compte</MenuItem>
                 <MenuItem onClick={this.handleLogout} className={classes.menuItem}>Déconnexion</MenuItem>
               </Menu>) : (
               <Menu
@@ -154,9 +159,9 @@ class Layout extends Component {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Switch>
-            <Route exact path="/" render={(props) => (
+            <Route exact path="/" render={() => (
               authToken? (
-                <Dashboard {...props} logout={this.logout} />
+                <Dashboard />
               ) : (
                 <Redirect to="/signin"/>
               )
@@ -168,9 +173,27 @@ class Layout extends Component {
                 <Redirect to="/"/>
               )
             )} />
-            <Route exact path="/makeassessment" component={MakeAssessment} />
-            <Route exact path='/register' component={Register} />
-            <Route exact path='/album' component={Album} />
+            <Route exact path='/register' render={() => (
+              !authToken? (
+                <Register />
+              ) : (
+                <Redirect to="/"/>
+              )
+            )} />
+            <Route exact path="/makeassessment" render={() => (
+              authToken? (
+                <MakeAssessment />
+              ) : (
+                <Redirect to="/signin"/>
+              )
+            )} />
+            <Route exact path="/profile" render={() => (
+              authToken? (
+                <Profile />
+              ) : (
+                <Redirect to="/signin"/>
+              )
+            )} />
           </Switch>
         </main>
       </div>
