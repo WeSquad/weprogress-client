@@ -107,6 +107,7 @@ export const authStyles = {
 export const profileStyles = {
   paper: {
     padding: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit * 3,
     [theme.breakpoints.up(600 + theme.spacing.unit * 3 * 2)]: {
       padding: theme.spacing.unit * 3,
     },
@@ -125,4 +126,7 @@ export const profileStyles = {
   submit: {
     marginTop: theme.spacing.unit * 3,
   },
+  formHelper: {
+    marginTop: theme.spacing.unit * 2,
+  }
 };

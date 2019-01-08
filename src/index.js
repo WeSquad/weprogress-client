@@ -10,6 +10,7 @@ import { createHttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { BrowserRouter } from 'react-router-dom';
 import { setContext } from 'apollo-link-context';
+import { SnackbarProvider } from 'notistack';
 
 import { AUTH_TOKEN } from './constants';
 
@@ -36,9 +37,11 @@ const client = new ApolloClient({
 
 ReactDOM.render(
   <BrowserRouter>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
+    <SnackbarProvider maxSnack={3}>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+    </SnackbarProvider>
   </BrowserRouter>
   , document.getElementById('root'));
 
