@@ -106,9 +106,10 @@ class Profile extends Component {
 
   handleError = error => {
     if (error.graphQLErrors[0]) {
-      this.setState({ errorMsg: error.graphQLErrors[0].message});
+      this.props.enqueueSnackbar(error.graphQLErrors[0].message, {
+        variant: 'error',
+      });
     } else {
-      this.setState({ errorMsg: 'Enregistrement impossible'});
       this.props.enqueueSnackbar('Enregistrement impossible', {
         variant: 'error',
       });

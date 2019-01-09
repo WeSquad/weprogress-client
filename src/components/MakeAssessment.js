@@ -1,47 +1,77 @@
 import React, { Component } from 'react';
-import gql from 'graphql-tag';
-import { Typography } from '@material-ui/core';
-import { Query } from 'react-apollo';
-
-const ME_QUERY = gql`
-  {
-    me {
-      id
-      jobs {
-        id
-        name
-      }
-    }
-  }
-`;
-
+import { Typography, Stepper, Step, StepButton } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import { assessmentStyles } from '../styles/Wetheme';
+import AStep1 from './assessment/AStep1';
+import AStep2 from './assessment/AStep2';
+import AStep3 from './assessment/AStep3';
 
 class MakeAssessment extends Component {
   state = {
-    chosenJobId: 0,
+    step: 0,
+    jobId: '',
+    completed: {},
+  };
+
+  handleNext = jobId => {
+    this.setState({ step: this.state.step + 1});
+    if (jobId) this.setState({ jobId: jobId});
+  };
+
+  handleBack = () => {
+    this.setState({ step: this.state.step - 1});
+  };
+
+  handleStep = step => () => {
+    if (step < this.state.step) {
+      this.setState({
+        step: step,
+      });
+    }
+  };
+
+  handleComplete = () => {
+    const { completed } = this.state;
+    completed[this.state.step] = true;
+    this.setState({
+      completed,
+    });
   };
 
   render() {
-    const { chosenJobId } = this.state;
+    const { step, jobId, completed } = this.state;
+    const { classes } = this.props;
+    const steps = ['Choix du métier', 'Assessment', 'Résultats'];
+
+    const getStepContent = step => {
+      switch (step) {
+        case 0:
+          return <AStep1 handleNext={this.handleNext} handleComplete={this.handleComplete} />;
+        case 1:
+          return <AStep2 job={jobId} handleNext={this.handleNext} handleBack={this.handleBack} handleComplete={this.handleComplete} />;
+        case 2:
+          return <AStep3 handleBack={this.handleBack} handleComplete={this.handleComplete} />;
+        default:
+          throw new Error('Unknown step');
+      }
+    }
 
     return (
       <div>
         <Typography variant="h4" gutterBottom component="h2">
           M'auto-évaluer
         </Typography>
-        <Query query={ME_QUERY}>
-          {({ loading, error, data }) => {
-            if (loading) return "Chargement...";
-            if (error) return `Error! ${error.message}`;
-
-            return (
-                <div>Aucun job défini. Merci de remplir votre profil et préciser quel job vous voulez évaluer.</div>
-            );
-          }}
-        </Query>
+        <Stepper activeStep={step} className={classes.stepper}>
+          {steps.map((label, index) => (
+            <Step key={label}>
+              <StepButton onClick={this.handleStep(index)} completed={completed[index]}>{label}</StepButton>
+            </Step>
+          ))}
+        </Stepper>
+        {getStepContent(step)}
       </div>
     );
   }
 }
 
-export default MakeAssessment;
+export default withStyles(assessmentStyles)(MakeAssessment);
