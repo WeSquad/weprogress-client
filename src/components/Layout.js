@@ -10,6 +10,7 @@ import { Menu as MenuIcon, AccountCircle } from '@material-ui/icons';
 
 import Dashboard from './Dashboard';
 import MakeAssessment from './MakeAssessment';
+import MyOldAssessments from './MyOldAssessments';
 import SignIn from './SignIn';
 import Register from './Register';
 import InsideDrawer from './InsideDrawer';
@@ -178,6 +179,13 @@ class Layout extends Component {
                 <Register />
               ) : (
                 <Redirect to="/"/>
+              )
+            )} />
+            <Route exact path="/myoldassessments" render={() => (
+              authToken? (
+                <MyOldAssessments />
+              ) : (
+                <Redirect to="/signin"/>
               )
             )} />
             <Route exact path="/makeassessment" render={() => (

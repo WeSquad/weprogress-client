@@ -1,33 +1,10 @@
 import React, { Component } from 'react';
 import { Typography, Paper } from '@material-ui/core';
-import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
-import { assessmentStyles } from '../../styles/Wetheme';
+import { assessmentStyles } from '../styles/Wetheme';
 import { Radar } from 'react-chartjs';
 
-class AStep3 extends Component {
-  constructor(props) {
-    super();
-
-    this.handleComplete(props);
-  }
-
-  async handleComplete(props) {
-    props.handleComplete();
-  }
-
-  handleError = error => {
-    if (error.graphQLErrors[0]) {
-      this.props.enqueueSnackbar(error.graphQLErrors[0].message, {
-        variant: 'error',
-      });
-    } else {
-      this.props.enqueueSnackbar('Problème technique', {
-        variant: 'error',
-      });
-    }
-  };
-
+class MyOldAssessments extends Component {
   render() {
     const { classes } = this.props;
 
@@ -62,4 +39,4 @@ class AStep3 extends Component {
   }
 }
 
-export default withStyles(assessmentStyles)(withSnackbar(AStep3));
+export default withStyles(assessmentStyles)(MyOldAssessments);

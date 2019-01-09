@@ -45,12 +45,14 @@ class InsideDrawer extends Component {
           <Divider />
           <List>
             <ListSubheader inset>Mes Assessments</ListSubheader>
-            <ListItem button>
-              <ListItemIcon>
-                <Assignment />
-              </ListItemIcon>
-              <ListItemText primary="10/12/2018" />
-            </ListItem>
+            <Link to="/myoldassessments" className={classes.menuLink}>
+              <ListItem button>
+                <ListItemIcon>
+                  <Assignment />
+                </ListItemIcon>
+                <ListItemText primary="10/12/2018" />
+              </ListItem>
+            </Link>
           </List>
         </>
         ) : (
