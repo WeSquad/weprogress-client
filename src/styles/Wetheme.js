@@ -132,6 +132,9 @@ export const profileStyles = {
 };
 
 export const assessmentStyles = {
+  root: {
+    flexGrow: 1
+  },
   paper: {
     padding: theme.spacing.unit * 2,
     marginBottom: theme.spacing.unit * 3,

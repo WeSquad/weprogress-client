@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { Button, Typography, FormHelperText, Grid, Paper, List, ListItem } from '@material-ui/core';
+import sizeMe from 'react-sizeme';
+import StackGrid from 'react-stack-grid';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
-import ReactStars from 'react-stars'
+import ReactStars from 'react-stars';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
 import { theme, assessmentStyles } from '../../styles/Wetheme';
@@ -46,7 +48,7 @@ class AStep2 extends Component {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, size: {width}} = this.props;
 
     return (
       <div>
@@ -55,13 +57,13 @@ class AStep2 extends Component {
             if (loading) return <FormHelperText>Chargement...</FormHelperText>;
 
             return (
-              <>
+              <div className={classes.root}>
                 <Typography variant="h5" component="h3" className={classes.jobTitle}>
                   Évaluer votre niveau de {data.job.name}
                 </Typography>
-                <Grid container spacing={16}>
+                <StackGrid gutterWidth={24} columnWidth={width <= 768 ? '100%' : '50%'}>
                 {data.job.axes.map(axe => (
-                  <Grid item xs={12} sm={6} className={classes.gridItems} key={axe.id}>
+                  <div className={classes.gridItems} key={axe.id}>
                     <Paper className={classes.paper}>
                     <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.name}</Typography>
                       <List>
@@ -84,13 +86,13 @@ class AStep2 extends Component {
                         ))}
                       </List>
                     </Paper>
-                  </Grid>
+                  </div>
                 ))}
-                </Grid>
+                </StackGrid>
                 <Button color="primary" variant="contained" onClick={e => {this.handleComplete();}}>
-                  Voir mes résultats
+                  Enregister & voir mes résultats
                 </Button>
-              </>
+              </div>
             );
           }}
         </Query>
@@ -99,4 +101,4 @@ class AStep2 extends Component {
   }
 }
 
-export default withStyles(assessmentStyles)(withSnackbar(AStep2));
+export default sizeMe()(withStyles(assessmentStyles)(withSnackbar(AStep2)));
