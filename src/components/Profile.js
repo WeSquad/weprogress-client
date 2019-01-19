@@ -146,6 +146,11 @@ class Profile extends Component {
             variables={{ 'id': me.id, 'input': { email: me.email, firstName: me.firstName, lastName: me.lastName, password: me.password }}}
             onError={error => this.handleError(error)}
             onCompleted={data => this.handleSubmit(data)}
+            update={(cache, { data: { updateUser } }) => {
+              const data = cache.readQuery({ query: ME_QUERY });
+              data.me = updateUser;
+              cache.writeQuery({ query: ME_QUERY, data });
+            }}
           >
           {mutation => (
             <form className={classes.form} onSubmit={e => {e.preventDefault(); mutation()}}>
@@ -233,6 +238,11 @@ class Profile extends Component {
                 variables={{ 'id': me.id, 'jobsIds': myjobs }}
                 onError={error => this.handleError(error)}
                 onCompleted={data => this.handleSubmit(data)}
+                update={(cache, { data: { setJobs } }) => {
+                  const data = cache.readQuery({ query: ME_QUERY });
+                  data.me.jobs = setJobs.jobs;
+                  cache.writeQuery({ query: ME_QUERY, data });
+                }}
               >
                 {jobsMutation => (
                   <form className={classes.form} onSubmit={e => {e.preventDefault(); jobsMutation()}}>

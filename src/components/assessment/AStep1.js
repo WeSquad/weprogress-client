@@ -44,8 +44,10 @@ class AStep1 extends Component {
 
   handleClose = () => {
     this.setState({ openJobDialog: false });
-    this.props.handleComplete();
-    this.props.handleNext(this.state.chosenJobId);
+    if (this.state.chosenJobId !== '') {
+      this.props.handleComplete();
+      this.props.handleNext(this.state.chosenJobId);
+    }
   };
 
   handleJobChangeSelect = event => {
