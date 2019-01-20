@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Typography, Stepper, Step, StepButton } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { assessmentStyles } from '../styles/Wetheme';
-import AStep1 from './assessment/AStep1';
-import AStep2 from './assessment/AStep2';
-import AStep3 from './assessment/AStep3';
+import assessmentStyles from './MakeAssessment.styles';
+import AStep1 from './steps/AStep1';
+import AStep2 from './steps/AStep2';
+import AStep3 from './steps/AStep3';
 
 class MakeAssessment extends Component {
   state = {

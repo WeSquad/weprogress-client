@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Avatar, Button, Paper, Typography, TextField, FormHelperText } from '@material-ui/core';
-import { Fingerprint } from '@material-ui/icons';
+import { Avatar, Button, FormControlLabel, Checkbox, Paper, Typography, TextField, FormHelperText } from '@material-ui/core';
+import { LockOutlined as LockIcon } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { AUTH_TOKEN, AUTH_USERID, AUTH_USERNAME } from '../constants';
-import { authStyles } from '../styles/Wetheme';
+import { AUTH_TOKEN, AUTH_USERID, AUTH_USERNAME } from '../../constants';
+import signInStyles from './SignIn.styles';
 
-const REGISTER_MUTATION = gql`
-  mutation register($input: RegisterUserInput!) {
-    register(input: $input) {
+const LOGIN_MUTATION = gql`
+  mutation login($email: String!, $password: String!, $rememberme: Boolean) {
+    login(email: $email, password: $password, rememberme: $rememberme) {
       token
       user {
         id
@@ -22,64 +22,39 @@ const REGISTER_MUTATION = gql`
   }
 `;
 
-class Register extends Component {
+class SignIn extends Component {
   state = {
     email: '',
-    firstName: '',
-    lastName: '',
     password: '',
+    rememberme: false,
     errorMsg: '',
   };
 
   render() {
-    const { email, firstName, lastName, password, errorMsg } = this.state;
+    const { email, password, rememberme, errorMsg } = this.state;
     const { classes } = this.props;
 
     const handleError = error => {
-      if (error.graphQLErrors[0]) {
-        this.setState({ errorMsg: error.graphQLErrors[0].message});
-      } else {
-        this.setState({ errorMsg: 'Enregistrement impossible'});
-      }
+      this.setState({ errorMsg: error.graphQLErrors[0].message});
     };
 
     return (
       <main className={classes.main}>
         <Paper className={classes.paper}>
           <Avatar className={classes.avatar}>
-            <Fingerprint />
+            <LockIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            S'enregistrer
+            S'identifier
           </Typography>
             <Mutation
-                mutation={REGISTER_MUTATION}
-                variables={{ 'input': { email, firstName, lastName, password }}}
+                mutation={LOGIN_MUTATION}
+                variables={{ email, password, rememberme }}
                 onCompleted={data => this._confirm(data)}
                 onError={error => handleError(error)}
             >
             {mutation => (
             <form className={classes.form} onSubmit={e => {e.preventDefault(); mutation()}}>
-              <TextField
-                id="firstName"
-                name="firstName"
-                label="Nom"
-                value={firstName}
-                onChange={e => this.setState({ firstName: e.target.value })}
-                margin="normal"
-                required
-                fullWidth
-              />
-              <TextField
-                id="lastName"
-                name="lastName"
-                label="Prénom"
-                value={lastName}
-                onChange={e => this.setState({ lastName: e.target.value })}
-                margin="normal"
-                required
-                fullWidth
-              />
               <TextField
                 id="email"
                 name="email"
@@ -101,6 +76,10 @@ class Register extends Component {
                 required
                 fullWidth
               />
+              <FormControlLabel
+                control={<Checkbox name="rememberme" checked={rememberme} onChange={e => this.setState({ rememberme: e.target.checked })} color="primary" />}
+                label="Se souvenir de moi"
+              />
               {errorMsg && (
                 <FormHelperText className={classes.errorMsg}>{errorMsg}</FormHelperText>
               )}
@@ -110,7 +89,7 @@ class Register extends Component {
                 color="primary"
                 type="submit"
                 className={classes.submit}>
-                  S'enregistrer
+                  Connexion
               </Button>
             </form>
             )}
@@ -118,7 +97,7 @@ class Register extends Component {
         </Paper>
         <div>
           <Typography variant="subtitle2" gutterBottom align="center" className={classes.createAccount}>
-            Vous avez déjà un compte? <Link to="/signin">Connectez-vous ici.</Link>
+            Vous n'avez pas compte? <Link to="/register">Enregistrez-vous ici.</Link>
           </Typography>
         </div>
       </main>
@@ -126,21 +105,21 @@ class Register extends Component {
   }
 
   _confirm = async data => {
-    const { register } = data;
-    this._saveUserData(register);
+    const { login } = data;
+    this._saveUserData(login);
     this.props.history.push(`/`);
   }
 
-  _saveUserData = register => {
-    sessionStorage.setItem(AUTH_TOKEN, register.token);
-    sessionStorage.setItem(AUTH_USERID, register.user.id);
-    sessionStorage.setItem(AUTH_USERNAME, register.user.fullName);
+  _saveUserData = login => {
+    sessionStorage.setItem(AUTH_TOKEN, login.token);
+    sessionStorage.setItem(AUTH_USERID, login.user.id);
+    sessionStorage.setItem(AUTH_USERNAME, login.user.fullName);
   }
 }
 
-Register.propTypes = {
+SignIn.propTypes = {
   classes: PropTypes.object.isRequired,
   history: PropTypes.object.isRequired
 };
 
-export default withStyles(authStyles)(withRouter(Register));
+export default withStyles(signInStyles)(withRouter(SignIn));

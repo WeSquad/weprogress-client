@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { Divider, List, ListItem, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core';
 import { Dashboard, BarChart, Layers, Assignment, PersonAdd }  from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-import { drawerStyles } from '../styles/Wetheme';
-import { AUTH_TOKEN } from '../constants';
+import drawerStyles from './InsideDrawer.styles';
+import { AUTH_TOKEN } from '../../constants';
 
 class InsideDrawer extends Component {
   render() {

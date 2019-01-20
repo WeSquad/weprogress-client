@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { Typography, Paper } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
-import { assessmentStyles } from '../../styles/Wetheme';
 import { Radar } from 'react-chartjs';
+import { Query } from 'react-apollo';
+import gql from 'graphql-tag';
+import assessmentStyles from '../MakeAssessment.styles';
 
 class AStep3 extends Component {
   constructor(props) {

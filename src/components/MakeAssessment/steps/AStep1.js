@@ -5,8 +5,8 @@ import { Dialog, DialogTitle, DialogContent, FormControl, InputLabel, Select, Me
 import { Add } from '@material-ui/icons';
 import { Query } from 'react-apollo';
 import { withStyles } from '@material-ui/core/styles';
-import { assessmentStyles } from '../../styles/Wetheme';
 import { withSnackbar } from 'notistack';
+import assessmentStyles from '../MakeAssessment.styles';
 
 const ME_QUERY = gql`
   {

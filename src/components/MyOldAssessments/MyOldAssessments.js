@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Typography, Paper } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { assessmentStyles } from '../styles/Wetheme';
 import { Radar } from 'react-chartjs';
+import assessmentStyles from '../MakeAssessment/MakeAssessment.styles';
 
 class MyOldAssessments extends Component {
   render() {

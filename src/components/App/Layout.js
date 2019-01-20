@@ -2,21 +2,14 @@ import React, { Component } from 'react';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { withApollo } from 'react-apollo';
 import PropTypes from 'prop-types';
-
 import { withStyles } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import { AppBar, Toolbar, Menu, MenuItem, IconButton, Typography, Drawer, Hidden } from '@material-ui/core';
+import { AppBar, Toolbar, Menu, MenuItem, IconButton, Typography, Drawer, Hidden, CssBaseline } from '@material-ui/core';
 import { Menu as MenuIcon, AccountCircle } from '@material-ui/icons';
 
-import Dashboard from './Dashboard';
-import MakeAssessment from './MakeAssessment';
-import MyOldAssessments from './MyOldAssessments';
-import SignIn from './SignIn';
-import Register from './Register';
+import { Dashboard, MakeAssessment, MyOldAssessments, SignIn, Register, Profile } from '..';
 import InsideDrawer from './InsideDrawer';
-import Profile from './Profile';
-import { layoutStyles } from '../styles/Wetheme';
-import { AUTH_TOKEN } from '../constants';
+import layoutStyles from './Layout.styles';
+import { AUTH_TOKEN } from '../../constants';
 
 class Layout extends Component {
   state = {

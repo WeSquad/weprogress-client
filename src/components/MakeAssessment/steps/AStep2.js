@@ -7,7 +7,8 @@ import gql from 'graphql-tag';
 import ReactStars from 'react-stars';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
-import { theme, assessmentStyles } from '../../styles/Wetheme';
+import { theme } from '../..';
+import assessmentStyles from '../MakeAssessment.styles';
 
 const JOB_QUERY = gql`
   query job($id: ID!){

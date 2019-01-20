@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { Button, Paper, Typography, TextField, FormHelperText, Grid, FormControlLabel, Checkbox } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { profileStyles } from '../styles/Wetheme';
 import { withSnackbar } from 'notistack';
+import profileStyles from './Profile.styles';
 
 const ME_QUERY = gql`
   {
