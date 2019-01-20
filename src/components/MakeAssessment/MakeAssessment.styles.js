@@ -44,6 +44,12 @@ const assessmentStyles = {
   pskill: {
     paddingTop: 5,
   },
+  canvasContainer: {
+    height: "40vh",
+    [theme.breakpoints.up('sm')]: {
+      height: "70vh",
+    }
+  }
 };
 
 export default assessmentStyles;

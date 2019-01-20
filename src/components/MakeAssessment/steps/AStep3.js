@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Typography, Paper } from '@material-ui/core';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
-import { Radar } from 'react-chartjs';
+import { Radar } from 'react-chartjs-2';
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag';
 import assessmentStyles from '../MakeAssessment.styles';

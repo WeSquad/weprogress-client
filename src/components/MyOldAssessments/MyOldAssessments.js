@@ -1,27 +1,45 @@
 import React, { Component } from 'react';
 import { Typography, Paper } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
-import { Radar } from 'react-chartjs';
+import { Radar } from 'react-chartjs-2';
 import assessmentStyles from '../MakeAssessment/MakeAssessment.styles';
+import { theme } from '..';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 class MyOldAssessments extends Component {
   render() {
     const { classes } = this.props;
 
-    var data = {
+    const data = {
       labels: ["Les bases du PO", "Product Growth", "Product UX", "Product Strategist", "Product Mobile", "Agiliste Wemanity", "Frameworks Agile", "Les savoirs être Wemanity"],
       datasets: [
         {
           label: "Mon Assessment",
-          fillColor: "rgba(245,0,87,0.2)",
-          strokeColor: "rgba(245,0,87,1)",
-          pointColor: "rgba(179,0,64,1)",
-          pointStrokeColor: "#fff",
-          pointHighlightFill: "#fff",
-          pointHighlightStroke: "rgba(245,0,87,1)",
+          backgroundColor: fade(theme.palette.secondary.main, 0.2),
+          borderColor: theme.palette.secondary.main,
+          pointBackgroundColor: theme.palette.secondary.main,
+          pointBorderColor: theme.palette.secondary.light,
+          pointHoverBackgroundColor: theme.palette.secondary.dark,
+          pointHoverBorderColor: theme.palette.secondary.light,
+          pointStyle: "rectRounded",
+          pointRadius: 5,
           data: [90, 40, 40, 40, 80, 85, 60, 90]
         }
       ]
+    };
+
+    const options = {
+      responsive: true,
+      legend: {
+        position: 'bottom',
+      },
+      scale: {
+        ticks: {
+          beginAtZero: true,
+          max: 100
+        }
+      },
+      maintainAspectRatio: false
     };
 
     return (
@@ -31,7 +49,9 @@ class MyOldAssessments extends Component {
             Vos Résultats!
           </Typography>
           <Paper className={classes.paper}>
-            <Radar data={data} width="800" height="506" />
+            <div className={classes.canvasContainer}>
+              <Radar data={data} options={options} />
+            </div>
           </Paper>
         </>
       </div>
