@@ -1,67 +1,116 @@
 import React, { Component } from 'react';
-import { Typography, Paper } from '@material-ui/core';
-import { withSnackbar } from 'notistack';
+import { Typography, Paper, FormHelperText } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { Radar } from 'react-chartjs-2';
-import { Query } from 'react-apollo';
+import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import assessmentStyles from '../MakeAssessment.styles';
+import { theme } from '../..';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+
+const ASSESSMENT_RATES_QUERY = gql`
+  query assessmentRates($id: ID!){
+    assessmentRates(id: $id) {
+      name
+      skillsTotal
+      skillsCount
+      axePourcent
+    }
+  }
+`;
 
 class AStep3 extends Component {
   constructor(props) {
     super();
+    this.state = {
+      loadingQuery: true,
+      axesNames: [],
+      axesValues: []
+    };
 
+    this.fetchRates(props);
     this.handleComplete(props);
-  }
+  };
+
+  async fetchRates(props) {
+    const { assessmentId, client } = props;
+    const { data } = await client.query({
+      query: ASSESSMENT_RATES_QUERY,
+      variables: { 'id': assessmentId }
+    });
+
+    var names = [];
+    var values = [];
+
+    data.assessmentRates.forEach(rate => {
+      names.push(rate.name);
+      values.push(rate.axePourcent.toFixed(1));
+    });
+
+    this.setState({
+      axesNames: names,
+      axesValues: values,
+      loadingQuery: false,
+    });
+  };
 
   async handleComplete(props) {
     props.handleComplete();
-  }
-
-  handleError = error => {
-    if (error.graphQLErrors[0]) {
-      this.props.enqueueSnackbar(error.graphQLErrors[0].message, {
-        variant: 'error',
-      });
-    } else {
-      this.props.enqueueSnackbar('Problème technique', {
-        variant: 'error',
-      });
-    }
   };
 
   render() {
     const { classes } = this.props;
+    const { axesNames, axesValues, loadingQuery } = this.state;
 
-    var data = {
-      labels: ["Les bases du PO", "Product Growth", "Product UX", "Product Strategist", "Product Mobile", "Agiliste Wemanity", "Frameworks Agile", "Les savoirs être Wemanity"],
+    const data = {
+      labels: axesNames,
       datasets: [
         {
           label: "Mon Assessment",
-          fillColor: "rgba(245,0,87,0.2)",
-          strokeColor: "rgba(245,0,87,1)",
-          pointColor: "rgba(179,0,64,1)",
-          pointStrokeColor: "#fff",
-          pointHighlightFill: "#fff",
-          pointHighlightStroke: "rgba(245,0,87,1)",
-          data: [90, 40, 40, 40, 80, 85, 60, 90]
+          backgroundColor: fade(theme.palette.secondary.main, 0.2),
+          borderColor: theme.palette.secondary.main,
+          pointBackgroundColor: theme.palette.secondary.main,
+          pointBorderColor: theme.palette.secondary.light,
+          pointHoverBackgroundColor: theme.palette.secondary.dark,
+          pointHoverBorderColor: theme.palette.secondary.light,
+          data: axesValues
         }
       ]
     };
 
+    const options = {
+      responsive: true,
+      legend: {
+        position: 'bottom',
+      },
+      scale: {
+        ticks: {
+          beginAtZero: true,
+          max: 100
+        }
+      },
+      maintainAspectRatio: false
+    };
+
     return (
       <div>
-        <>
-          <Typography variant="h5" component="h3" className={classes.jobTitle}>
-            Vos Résultats!
-          </Typography>
-          <Paper className={classes.paper}>
-            <Radar data={data} width="800" height="506" />
-          </Paper>
-        </>
+        {loadingQuery? (
+          <FormHelperText>Chargement...</FormHelperText>
+        ) : (
+          <div>
+            <Typography variant="h5" component="h3" className={classes.jobTitle}>
+              Vos Résultats!
+            </Typography>
+            <Paper className={classes.paper}>
+              <div class={classes.canvasContainer}>
+                <Radar data={data} options={options} />
+              </div>
+            </Paper>
+          </div>
+        )}
       </div>
     );
   }
 }
 
-export default withStyles(assessmentStyles)(withSnackbar(AStep3));
+export default withStyles(assessmentStyles)(withApollo(AStep3));

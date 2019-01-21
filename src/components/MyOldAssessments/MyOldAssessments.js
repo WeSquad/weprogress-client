@@ -1,17 +1,64 @@
 import React, { Component } from 'react';
-import { Typography, Paper } from '@material-ui/core';
+import { Typography, Paper, FormHelperText } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import { Radar } from 'react-chartjs-2';
+import { withApollo } from 'react-apollo';
+import gql from 'graphql-tag';
 import assessmentStyles from '../MakeAssessment/MakeAssessment.styles';
 import { theme } from '..';
-import { fade } from '@material-ui/core/styles/colorManipulator';
+
+const ASSESSMENT_RATES_QUERY = gql`
+  query assessmentRates($id: ID!){
+    assessmentRates(id: $id) {
+      name
+      skillsTotal
+      skillsCount
+      axePourcent
+    }
+  }
+`;
 
 class MyOldAssessments extends Component {
+  constructor(props) {
+    super();
+    this.state = {
+      loadingQuery: true,
+      axesNames: [],
+      axesValues: []
+    };
+
+    this.fetchRates(props);
+  };
+
+  async fetchRates(props) {
+    const { client } = props;
+    const { data } = await client.query({
+      query: ASSESSMENT_RATES_QUERY,
+      variables: { 'id': "5c461399c70ae4182f13ff3a" }
+    });
+
+    var names = [];
+    var values = [];
+
+    data.assessmentRates.forEach(rate => {
+      names.push(rate.name);
+      values.push(rate.axePourcent.toFixed(1));
+    });
+
+    this.setState({
+      axesNames: names,
+      axesValues: values,
+      loadingQuery: false,
+    });
+  };
+
   render() {
     const { classes } = this.props;
+    const { axesNames, axesValues, loadingQuery } = this.state;
 
     const data = {
-      labels: ["Les bases du PO", "Product Growth", "Product UX", "Product Strategist", "Product Mobile", "Agiliste Wemanity", "Frameworks Agile", "Les savoirs être Wemanity"],
+      labels: axesNames,
       datasets: [
         {
           label: "Mon Assessment",
@@ -21,9 +68,7 @@ class MyOldAssessments extends Component {
           pointBorderColor: theme.palette.secondary.light,
           pointHoverBackgroundColor: theme.palette.secondary.dark,
           pointHoverBorderColor: theme.palette.secondary.light,
-          pointStyle: "rectRounded",
-          pointRadius: 5,
-          data: [90, 40, 40, 40, 80, 85, 60, 90]
+          data: axesValues
         }
       ]
     };
@@ -44,19 +89,23 @@ class MyOldAssessments extends Component {
 
     return (
       <div>
-        <>
-          <Typography variant="h5" component="h3" className={classes.jobTitle}>
-            Vos Résultats!
-          </Typography>
-          <Paper className={classes.paper}>
-            <div className={classes.canvasContainer}>
-              <Radar data={data} options={options} />
-            </div>
-          </Paper>
-        </>
+        {loadingQuery? (
+          <FormHelperText>Chargement...</FormHelperText>
+        ) : (
+          <div>
+            <Typography variant="h5" component="h3" className={classes.jobTitle}>
+              Vos Résultats!
+            </Typography>
+            <Paper className={classes.paper}>
+              <div class={classes.canvasContainer}>
+                <Radar data={data} options={options} />
+              </div>
+            </Paper>
+          </div>
+        )}
       </div>
     );
   }
 }
 
-export default withStyles(assessmentStyles)(MyOldAssessments);
+export default withStyles(assessmentStyles)(withApollo(MyOldAssessments));

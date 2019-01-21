@@ -31,10 +31,14 @@ class AStep1 extends Component {
       this.props.enqueueSnackbar(error.graphQLErrors[0].message, {
         variant: 'error',
       });
+
+      return <FormHelperText>Action impossible</FormHelperText>;
     } else {
       this.props.enqueueSnackbar('Problème technique', {
         variant: 'error',
       });
+
+      return <FormHelperText>Action impossible</FormHelperText>;
     }
   };
 
@@ -60,8 +64,11 @@ class AStep1 extends Component {
 
     return (
       <div>
-        <Query query={ME_QUERY} onError={error => this.handleError(error)}>
-          {({ loading, _, data }) => {
+        <Query query={ME_QUERY}>
+          {({ loading, error, data }) => {
+            if (error) {
+              return this.handleError(error);
+            }
             if (loading) return <FormHelperText>Chargement...</FormHelperText>;
 
             return (
