@@ -32,10 +32,10 @@ class MyOldAssessments extends Component {
   };
 
   async fetchRates(props) {
-    const { client } = props;
+    const { client, id } = props;
     const { data } = await client.query({
       query: ASSESSMENT_RATES_QUERY,
-      variables: { 'id': "5c461399c70ae4182f13ff3a" }
+      variables: { 'id': id },
     });
 
     var names = [];
@@ -97,7 +97,7 @@ class MyOldAssessments extends Component {
               Vos Résultats!
             </Typography>
             <Paper className={classes.paper}>
-              <div class={classes.canvasContainer}>
+              <div className={classes.canvasContainer}>
                 <Radar data={data} options={options} />
               </div>
             </Paper>

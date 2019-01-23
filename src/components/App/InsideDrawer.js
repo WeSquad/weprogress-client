@@ -3,12 +3,49 @@ import { Link } from 'react-router-dom';
 import { Divider, List, ListItem, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core';
 import { Dashboard, BarChart, Layers, Assignment, PersonAdd }  from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
+import { withApollo } from 'react-apollo';
+import gql from 'graphql-tag';
 import drawerStyles from './InsideDrawer.styles';
-import { AUTH_TOKEN } from '../../constants';
+import { AUTH_TOKEN, AUTH_USERID } from '../../constants';
+
+const MY_ASSESSMENTS_QUERY = gql`
+  query assessmentsByUser($userId: ID!, $limit: Float){
+    assessmentsByUser(userId: $userId, limit: $limit) {
+      id
+      createdAt
+    }
+  }
+`;
 
 class InsideDrawer extends Component {
+  constructor(props) {
+    super();
+    this.state = {
+      loadingQuery: true,
+      assessments: [],
+    };
+
+    this.fetchMyAssessments(props);
+  };
+
+  async fetchMyAssessments(props) {
+    if (sessionStorage.getItem(AUTH_TOKEN)) {
+      const { client } = props;
+      const { data } = await client.query({
+        query: MY_ASSESSMENTS_QUERY,
+        variables: { "userId": sessionStorage.getItem(AUTH_USERID), "limit": 3 }
+      });
+
+      this.setState({
+        assessments: data.assessmentsByUser,
+        loadingQuery: false,
+      });
+    }
+  };
+
   render() {
     const { classes } = this.props;
+    const { assessments, loadingQuery } = this.state;
     const authToken = sessionStorage.getItem(AUTH_TOKEN);
 
     return (
@@ -44,15 +81,22 @@ class InsideDrawer extends Component {
           </List>
           <Divider />
           <List>
-            <ListSubheader inset>Mes Assessments</ListSubheader>
-            <Link to="/myoldassessments" className={classes.menuLink}>
-              <ListItem button>
-                <ListItemIcon>
-                  <Assignment />
-                </ListItemIcon>
-                <ListItemText primary="10/12/2018" />
-              </ListItem>
-            </Link>
+            <ListSubheader>Mes 3 derniers Assessments</ListSubheader>
+            {assessments.map(assessment => {
+              let date = new Date(assessment.createdAt);
+              let formattedDate = date.toLocaleDateString("fr-FR");
+              let hourMinutes = `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
+              return(
+                <Link to={"/myoldassessments/" + assessment.id} className={classes.menuLink} key={assessment.id}>
+                  <ListItem button>
+                    <ListItemIcon>
+                      <Assignment />
+                    </ListItemIcon>
+                    <ListItemText primary={formattedDate} secondary={hourMinutes} />
+                  </ListItem>
+                </Link>
+              );
+            })}
           </List>
         </>
         ) : (
@@ -72,4 +116,4 @@ class InsideDrawer extends Component {
   }
 }
 
-export default withStyles(drawerStyles)(InsideDrawer);
+export default withStyles(drawerStyles)(withApollo(InsideDrawer));

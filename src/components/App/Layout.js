@@ -174,9 +174,9 @@ class Layout extends Component {
                 <Redirect to="/"/>
               )
             )} />
-            <Route exact path="/myoldassessments" render={() => (
+            <Route exact path="/myoldassessments/:id" render={({ match }) => (
               authToken? (
-                <MyOldAssessments />
+                <MyOldAssessments key={match.params.id} id={match.params.id} />
               ) : (
                 <Redirect to="/signin"/>
               )
