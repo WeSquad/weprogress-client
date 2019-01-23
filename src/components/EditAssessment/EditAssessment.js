@@ -3,88 +3,121 @@ import { Button, Typography, FormHelperText, Grid, Paper, List, ListItem } from 
 import sizeMe from 'react-sizeme';
 import StackGrid from 'react-stack-grid';
 import { Mutation, withApollo } from 'react-apollo';
+import { withRouter } from 'react-router-dom';
 import gql from 'graphql-tag';
 import ReactStars from 'react-stars';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
-import { theme } from '../..';
-import assessmentStyles from '../MakeAssessment.styles';
-import { AUTH_USERID } from '../../../constants';
+import { theme } from '..';
+import editAssessmentStyles from './EditAssessment.styles';
+import { AUTH_USERID } from '../../constants';
 
-const JOB_QUERY = gql`
-  query job($id: ID!){
-    job(id: $id) {
+const ASSESSMENT_QUERY = gql`
+  query assessment($id: ID!){
+    assessment(id: $id) {
       id
-      name
+      createdAt
+      user {
+        fullName
+      }
       axes {
-        id
-        name
+        axeId
+        axeName
         skills {
-          id
-          name
+          skillId
+          skillName
+          skillRate
+          wishes {
+            training
+            interest
+            noMore
+          }
         }
       }
     }
   }
 `;
 
-const CREATE_ASSESSMENT_MUTATION = gql`
-  mutation createAssessment($input: CreateAssessmentInput!) {
-    createAssessment(input: $input) {
+const UPDATE_ASSESSMENT_MUTATION = gql`
+  mutation updateAssessment($id: ID!, $input: CreateAssessmentInput!) {
+    updateAssessment(id: $id, input: $input) {
       id
+      createdAt
+      user {
+        fullName
+      }
+      axes {
+        axeId
+        axeName
+        skills {
+          skillId
+          skillName
+          skillRate
+          wishes {
+            training
+            interest
+            noMore
+          }
+        }
+      }
     }
   }
 `;
 
-class AStep2 extends Component {
+class EditAssessment extends Component {
   constructor(props) {
     super();
     this.state = {
       loadingQuery: true,
       job: {},
       axes: [],
-      userId: ""
+      updatedAssessment: {}
     };
 
-    this.fetchJob(props);
+    this.fetchAssessment(props);
   };
 
-  async fetchJob(props) {
-    const { client, job } = props;
+  fetchAssessment = async (props) => {
+    const { client, id } = props;
     const { data } = await client.query({
-      query: JOB_QUERY,
-      variables: { 'id': job }
-    });
-
-    // Construct final response squelette
-    const axes = [];
-    data.job.axes.forEach(axe => {
-      const skills = [];
-      axe.skills.forEach(skill => {
-        skills.push({
-          "skillId": skill.id,
-          "skillRate": 0
-        });
-      });
-
-      axes.push({
-        "axeId": axe.id,
-        "skills": skills
-      });
+      query: ASSESSMENT_QUERY,
+      variables: { 'id': id }
     });
 
     this.setState({
-      job: data.job,
+      axes: data.assessment.axes,
       loadingQuery: false,
-      axes: axes
     });
+
+    this.createInitialAxes();
   };
+
+  createInitialAxes = () => {
+    const { axes, updatedAssessment } = this.state;
+
+    const newAxes = [];
+    axes.forEach(axe => {
+      const {axeName, ...newAxe} = axe;
+      const newSkills = [];
+      axe.skills.forEach(oldSkill => {
+        const {skillName, ...newSkill} = oldSkill;
+        newSkills.push(newSkill);
+      });
+      newAxe.skills = newSkills;
+      newAxes.push(newAxe);
+    });
+
+    updatedAssessment.userId = sessionStorage.getItem(AUTH_USERID);
+    updatedAssessment.axes = newAxes;
+  }
 
   handleRating = (rating, skillId, axeId) => {
     const { axes } = this.state;
     const axe = axes.find(function(o){return o.axeId === axeId;} );
     const skill = axe.skills.find(function(o){return o.skillId === skillId;} );
     skill.skillRate = rating;
+
+    this.createInitialAxes();
   };
 
   skillValue = (skillId, axeId) => {
@@ -94,10 +127,11 @@ class AStep2 extends Component {
     return skill.skillRate;
   };
 
-  handleComplete = data => {
-    this.props.handleAssessment(data.createAssessment.id);
-    this.props.handleComplete();
-    this.props.handleNext();
+  handleComplete = () => {
+    this.props.enqueueSnackbar("Édition réussie.", {
+      variant: 'success',
+    });
+    this.props.history.push(`/myoldassessments/${this.props.id}`);
   };
 
   handleError = error => {
@@ -117,8 +151,9 @@ class AStep2 extends Component {
   };
 
   render() {
+    console.log(this.props.id);
     const { classes, size: {width}} = this.props;
-    const { job, axes, loadingQuery } = this.state;
+    const { axes, updatedAssessment, loadingQuery } = this.state;
 
     return (
       <div>
@@ -127,19 +162,19 @@ class AStep2 extends Component {
       ) : (
         <div className={classes.root}>
           <Typography variant="h5" component="h3" className={classes.jobTitle}>
-            Évaluer votre niveau de {job.name}
+            Editer votre auto-évaluation
           </Typography>
           <StackGrid gutterWidth={24} columnWidth={width <= 768 ? '100%' : '50%'}>
-          {job.axes.map(axe => (
-            <div className={classes.gridItems} key={axe.id}>
+          {axes.map(axe => (
+            <div className={classes.gridItems} key={axe.axeId}>
               <Paper className={classes.paper}>
-                <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.name}</Typography>
+                <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.axeName}</Typography>
                 <List>
                   {axe.skills.map(skill => (
-                    <ListItem className={classes.listItem} key={skill.id}>
+                    <ListItem className={classes.listItem} key={skill.skillId}>
                       <Grid container spacing={8}>
                         <Grid item xs={8}>
-                          <Typography component="p" className={classes.pskill}>{skill.name}:</Typography>
+                          <Typography component="p" className={classes.pskill}>{skill.skillName}:</Typography>
                         </Grid>
                         <Grid item xs={4}>
                           <ReactStars
@@ -147,8 +182,8 @@ class AStep2 extends Component {
                             size={18}
                             half={false}
                             color2={theme.palette.secondary.main}
-                            onChange={ratingChanged => {this.handleRating(ratingChanged, skill.id, axe.id)}}
-                            value={this.skillValue(skill.id, axe.id)}
+                            onChange={ratingChanged => {this.handleRating(ratingChanged, skill.skillId, axe.axeId)}}
+                            value={this.skillValue(skill.skillId, axe.axeId)}
                           />
                         </Grid>
                       </Grid>
@@ -160,14 +195,14 @@ class AStep2 extends Component {
           ))}
           </StackGrid>
           <Mutation
-            mutation={CREATE_ASSESSMENT_MUTATION}
-            variables={{ 'input': { userId: sessionStorage.getItem(AUTH_USERID), axes: axes }}}
-            onCompleted={data => this.handleComplete(data)}
+            mutation={UPDATE_ASSESSMENT_MUTATION}
+            variables={{ 'id': this.props.id, 'input': updatedAssessment}}
+            onCompleted={data => this.handleComplete()}
             onError={error => this.handleError(error)}
           >
             {mutation => (
               <Button color="primary" variant="contained" onClick={e => {mutation()}}>
-                Enregister & voir mes résultats
+                Modifier mon évaluation
               </Button>
             )}
           </Mutation>
@@ -178,4 +213,4 @@ class AStep2 extends Component {
   }
 }
 
-export default sizeMe()(withStyles(assessmentStyles)(withSnackbar(withApollo(AStep2))));
+export default sizeMe()(withStyles(editAssessmentStyles)(withSnackbar(withApollo(withRouter(EditAssessment)))));

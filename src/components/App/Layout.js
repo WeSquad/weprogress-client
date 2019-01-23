@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, Menu, MenuItem, IconButton, Typography, Drawer, Hidden, CssBaseline } from '@material-ui/core';
 import { Menu as MenuIcon, AccountCircle } from '@material-ui/icons';
 
-import { Dashboard, MakeAssessment, MyOldAssessments, SignIn, Register, Profile } from '..';
+import { Dashboard, MakeAssessment, MyOldAssessments, EditAssessment, SignIn, Register, Profile } from '..';
 import InsideDrawer from './InsideDrawer';
 import layoutStyles from './Layout.styles';
 import { AUTH_TOKEN } from '../../constants';
@@ -184,6 +184,13 @@ class Layout extends Component {
             <Route exact path="/makeassessment" render={() => (
               authToken? (
                 <MakeAssessment />
+              ) : (
+                <Redirect to="/signin"/>
+              )
+            )} />
+            <Route exact path="/editassessment/:id" render={({ match }) => (
+              authToken? (
+                <EditAssessment key={match.params.id} id={match.params.id} />
               ) : (
                 <Redirect to="/signin"/>
               )

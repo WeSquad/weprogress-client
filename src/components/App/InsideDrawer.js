@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Divider, List, ListItem, ListItemIcon, ListItemText, ListSubheader } from '@material-ui/core';
+import { Divider, List, ListItem, ListItemIcon, ListItemText, ListSubheader, FormHelperText } from '@material-ui/core';
 import { Dashboard, BarChart, Layers, Assignment, PersonAdd }  from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { withApollo } from 'react-apollo';
@@ -82,6 +82,7 @@ class InsideDrawer extends Component {
           <Divider />
           <List>
             <ListSubheader>Mes 3 derniers Assessments</ListSubheader>
+            {loadingQuery && <FormHelperText>Chargement...</FormHelperText>}
             {assessments.map(assessment => {
               let date = new Date(assessment.createdAt);
               let formattedDate = date.toLocaleDateString("fr-FR");

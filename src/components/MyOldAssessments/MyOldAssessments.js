@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Typography, Paper, FormHelperText } from '@material-ui/core';
+import { Typography, Paper, FormHelperText, Button } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { fade } from '@material-ui/core/styles/colorManipulator';
+import { Link } from 'react-router-dom';
 import { Radar } from 'react-chartjs-2';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
@@ -35,7 +36,8 @@ class MyOldAssessments extends Component {
     const { client, id } = props;
     const { data } = await client.query({
       query: ASSESSMENT_RATES_QUERY,
-      variables: { 'id': id },
+      variables: { "id": id },
+      fetchPolicy: "no-cache"
     });
 
     var names = [];
@@ -98,6 +100,9 @@ class MyOldAssessments extends Component {
             </Typography>
             <Paper className={classes.paper}>
               <div className={classes.canvasContainer}>
+                <Button color="secondary" variant="contained" component={({...props}) => <Link to={"/editassessment/" + this.props.id} {...props} />}>
+                  Editer cet auto-évaluation
+                </Button>
                 <Radar data={data} options={options} />
               </div>
             </Paper>
