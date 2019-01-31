@@ -20,7 +20,7 @@ const ASSESSMENT_RATES_QUERY = gql`
   }
 `;
 
-class MyOldAssessments extends Component {
+class ViewAssessment extends Component {
   constructor(props) {
     super();
     this.state = {
@@ -113,4 +113,4 @@ class MyOldAssessments extends Component {
   }
 }
 
-export default withStyles(assessmentStyles)(withApollo(MyOldAssessments));
+export default withStyles(assessmentStyles)(withApollo(ViewAssessment));
