@@ -8,7 +8,7 @@ import gql from 'graphql-tag';
 import ReactStars from 'react-stars';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
-import { theme } from '..';
+import { SkillSet, theme } from '..';
 import editAssessmentStyles from './EditAssessment.styles';
 import { AUTH_USERID } from '../../constants';
 
@@ -19,6 +19,9 @@ const ASSESSMENT_QUERY = gql`
       createdAt
       user {
         fullName
+      }
+      job {
+        id
       }
       axes {
         axeId
@@ -85,6 +88,7 @@ class EditAssessment extends Component {
     });
 
     this.setState({
+      job: data.assessment.job,
       axes: data.assessment.axes,
       loadingQuery: false,
     });
@@ -93,7 +97,7 @@ class EditAssessment extends Component {
   };
 
   createInitialAxes = () => {
-    const { axes, updatedAssessment } = this.state;
+    const { job, axes, updatedAssessment } = this.state;
 
     const newAxes = [];
     axes.forEach(axe => {
@@ -108,6 +112,7 @@ class EditAssessment extends Component {
     });
 
     updatedAssessment.userId = sessionStorage.getItem(AUTH_USERID);
+    updatedAssessment.jobId = job.id;
     updatedAssessment.axes = newAxes;
   }
 
@@ -131,7 +136,7 @@ class EditAssessment extends Component {
     this.props.enqueueSnackbar("Édition réussie.", {
       variant: 'success',
     });
-    this.props.history.push(`/myoldassessments/${this.props.id}`);
+    this.props.history.push(`/viewassessment/${this.props.id}`);
   };
 
   handleError = error => {
@@ -171,23 +176,7 @@ class EditAssessment extends Component {
                 <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.axeName}</Typography>
                 <List>
                   {axe.skills.map(skill => (
-                    <ListItem className={classes.listItem} key={skill.skillId}>
-                      <Grid container spacing={8}>
-                        <Grid item xs={8}>
-                          <Typography component="p" className={classes.pskill}>{skill.skillName}:</Typography>
-                        </Grid>
-                        <Grid item xs={4}>
-                          <ReactStars
-                            count={4}
-                            size={18}
-                            half={false}
-                            color2={theme.palette.secondary.main}
-                            onChange={ratingChanged => {this.handleRating(ratingChanged, skill.skillId, axe.axeId)}}
-                            value={this.skillValue(skill.skillId, axe.axeId)}
-                          />
-                        </Grid>
-                      </Grid>
-                    </ListItem>
+                    <SkillSet key={skill.skillId} axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} theme={theme} handleRating={this.handleRating} skillValue={this.skillValue} />
                   ))}
                 </List>
               </Paper>

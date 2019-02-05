@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
-import { Button, Typography, FormHelperText, Grid, Paper, List, ListItem } from '@material-ui/core';
+import { Button, Typography, FormHelperText, Paper, List } from '@material-ui/core';
 import sizeMe from 'react-sizeme';
 import StackGrid from 'react-stack-grid';
 import { Mutation, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
-import ReactStars from 'react-stars';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
-import { theme } from '../..';
+import { SkillSet, theme } from '../..';
 import assessmentStyles from '../MakeAssessment.styles';
 import { AUTH_USERID } from '../../../constants';
 
@@ -85,6 +84,8 @@ class AStep2 extends Component {
     const axe = axes.find(function(o){return o.axeId === axeId;} );
     const skill = axe.skills.find(function(o){return o.skillId === skillId;} );
     skill.skillRate = rating;
+
+    console.log(axes);
   };
 
   skillValue = (skillId, axeId) => {
@@ -136,23 +137,7 @@ class AStep2 extends Component {
                 <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.name}</Typography>
                 <List>
                   {axe.skills.map(skill => (
-                    <ListItem className={classes.listItem} key={skill.id}>
-                      <Grid container spacing={8}>
-                        <Grid item xs={8}>
-                          <Typography component="p" className={classes.pskill}>{skill.name}:</Typography>
-                        </Grid>
-                        <Grid item xs={4}>
-                          <ReactStars
-                            count={4}
-                            size={18}
-                            half={false}
-                            color2={theme.palette.secondary.main}
-                            onChange={ratingChanged => {this.handleRating(ratingChanged, skill.id, axe.id)}}
-                            value={this.skillValue(skill.id, axe.id)}
-                          />
-                        </Grid>
-                      </Grid>
-                    </ListItem>
+                    <SkillSet key={skill.id} axeId={axe.id} skillId={skill.id} skillName={skill.name} theme={theme} handleRating={this.handleRating} skillValue={this.skillValue} />
                   ))}
                 </List>
               </Paper>
@@ -161,7 +146,7 @@ class AStep2 extends Component {
           </StackGrid>
           <Mutation
             mutation={CREATE_ASSESSMENT_MUTATION}
-            variables={{ 'input': { userId: sessionStorage.getItem(AUTH_USERID), axes: axes }}}
+            variables={{ 'input': { userId: sessionStorage.getItem(AUTH_USERID), jobId: this.props.job, axes: axes }}}
             onCompleted={data => this.handleComplete(data)}
             onError={error => this.handleError(error)}
           >
