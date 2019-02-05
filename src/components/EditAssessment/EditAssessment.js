@@ -124,6 +124,14 @@ class EditAssessment extends Component {
     this.createInitialAxes();
   };
 
+  handleWishes = (wishes, skillId, axeId) => {
+    const { axes } = this.state;
+    const axe = axes.find(function(o){return o.axeId === axeId;} );
+    const skill = axe.skills.find(function(o){return o.skillId === skillId;} );
+
+    skill.wishes = wishes;
+  };
+
   skillValue = (skillId, axeId) => {
     const axe = this.state.axes.find(function(o){return o.axeId === axeId;} );
     const skill = axe.skills.find(function(o){return o.skillId === skillId;} );
@@ -155,7 +163,6 @@ class EditAssessment extends Component {
   };
 
   render() {
-    console.log(this.props.id);
     const { classes, size: {width}} = this.props;
     const { axes, updatedAssessment, loadingQuery } = this.state;
 
@@ -178,7 +185,7 @@ class EditAssessment extends Component {
                 <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.axeName}</Typography>
                 <List>
                   {axe.skills.map(skill => (
-                    <SkillSet key={skill.skillId} axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} handleRating={this.handleRating} skillValue={this.skillValue} />
+                    <SkillSet key={skill.skillId} axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} skillValue={this.skillValue} skillWishes={skill.wishes} handleRating={this.handleRating} handleWishes={this.handleWishes} />
                   ))}
                 </List>
               </Paper>

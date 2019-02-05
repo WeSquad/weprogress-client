@@ -62,13 +62,18 @@ class AStep2 extends Component {
       axe.skills.forEach(skill => {
         skills.push({
           "skillId": skill.id,
-          "skillRate": 0
+          "skillRate": 0,
+          "wishes": {
+            "interest": false,
+            "training": false,
+            "noMore": false
+          }
         });
       });
 
       axes.push({
         "axeId": axe.id,
-        "skills": skills
+        "skills": skills,
       });
     });
 
@@ -84,8 +89,14 @@ class AStep2 extends Component {
     const axe = axes.find(function(o){return o.axeId === axeId;} );
     const skill = axe.skills.find(function(o){return o.skillId === skillId;} );
     skill.skillRate = rating;
+  };
 
-    console.log(axes);
+  handleWishes = (wishes, skillId, axeId) => {
+    const { axes } = this.state;
+    const axe = axes.find(function(o){return o.axeId === axeId;} );
+    const skill = axe.skills.find(function(o){return o.skillId === skillId;} );
+
+    skill.wishes = wishes;
   };
 
   skillValue = (skillId, axeId) => {
@@ -140,7 +151,7 @@ class AStep2 extends Component {
                 <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.name}</Typography>
                 <List>
                   {axe.skills.map(skill => (
-                    <SkillSet key={skill.id} axeId={axe.id} skillId={skill.id} skillName={skill.name} handleRating={this.handleRating} skillValue={this.skillValue} />
+                    <SkillSet key={skill.id} axeId={axe.id} skillId={skill.id} skillName={skill.name} skillValue={this.skillValue} skillWishes={{"interest": false, "training": false, "noMore": false}} handleRating={this.handleRating} handleWishes={this.handleWishes} />
                   ))}
                 </List>
               </Paper>

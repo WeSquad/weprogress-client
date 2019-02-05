@@ -35,7 +35,7 @@ class SkillSet extends Component {
             />
           </Grid>
           <Grid item xs={2}>
-            <SkillWishes />
+            <SkillWishes handleWishes={this.props.handleWishes} skillId={skillId} axeId={axeId} wishes={this.props.skillWishes} />
           </Grid>
         </Grid>
       </ListItem>
