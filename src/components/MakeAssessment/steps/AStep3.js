@@ -102,7 +102,7 @@ class AStep3 extends Component {
               Vos Résultats!
             </Typography>
             <Paper className={classes.paper}>
-              <div class={classes.canvasContainer}>
+              <div className={classes.canvasContainer}>
                 <Radar data={data} options={options} />
               </div>
             </Paper>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import myAssessmentStyles from './MyAssessments.styles';
 import { AUTH_USERID, AUTH_TOKEN } from '../../constants';
-import { Button, Typography, Grid, Card, CardMedia, CardContent, CardActions } from '@material-ui/core';
+import { Button, Typography, Grid, Card, CardContent, CardActions } from '@material-ui/core';
 import gql from 'graphql-tag';
 import classNames from 'classnames';
 import { withSnackbar } from 'notistack';
@@ -14,6 +14,9 @@ const MY_ASSESSMENTS_QUERY = gql`
     assessmentsByUser(userId: $userId, limit: $limit) {
       id
       createdAt
+      job {
+        name
+      }
     }
   }
 `;
@@ -34,7 +37,8 @@ class MyAssessments extends Component {
       const { client } = props;
       const { data } = await client.query({
         query: MY_ASSESSMENTS_QUERY,
-        variables: { "userId": sessionStorage.getItem(AUTH_USERID), "limit": 3 }
+        variables: { "userId": sessionStorage.getItem(AUTH_USERID), "limit": 3 },
+        fetchPolicy: "no-cache"
       });
 
       this.setState({
@@ -69,14 +73,14 @@ class MyAssessments extends Component {
               let hourMinutes = `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
 
               return (
-              <Grid item key={assessment.id} sm={6} md={4} lg={3}>
+              <Grid item key={assessment.id} sm={6}>
                 <Card className={classes.card}>
                   <CardContent className={classes.cardContent}>
                     <Typography gutterBottom variant="h5" component="h2">
-                      {formattedDate}
+                      Assessment de {assessment.job.name}
                     </Typography>
                     <Typography>
-                      À {hourMinutes}
+                      Le {formattedDate} à {hourMinutes}
                     </Typography>
                   </CardContent>
                   <CardActions>
