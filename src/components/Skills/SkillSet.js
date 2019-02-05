@@ -16,7 +16,7 @@ const styles = theme => ({
 
 class SkillSet extends Component {
   render() {
-    const { classes, theme, skillId, skillName, axeId } = this.props;
+    const { classes, skillId, skillName, axeId } = this.props;
 
     return (
       <ListItem className={classes.listItem} key={skillId}>
@@ -29,7 +29,7 @@ class SkillSet extends Component {
               count={4}
               size={18}
               half={false}
-              color2={theme.palette.secondary.main}
+              color2="#fbc02d"
               onChange={ratingChanged => {this.props.handleRating(ratingChanged, skillId, axeId)}}
               value={this.props.skillValue(skillId, axeId)}
             />

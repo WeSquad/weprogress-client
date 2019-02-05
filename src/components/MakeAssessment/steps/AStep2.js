@@ -6,7 +6,7 @@ import { Mutation, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
-import { SkillSet, theme } from '../..';
+import { SkillSet, SkillLegend } from '../..';
 import assessmentStyles from '../MakeAssessment.styles';
 import { AUTH_USERID } from '../../../constants';
 
@@ -130,6 +130,9 @@ class AStep2 extends Component {
           <Typography variant="h5" component="h3" className={classes.jobTitle}>
             Évaluer votre niveau de {job.name}
           </Typography>
+
+          <SkillLegend />
+
           <StackGrid gutterWidth={24} columnWidth={width <= 768 ? '100%' : '50%'}>
           {job.axes.map(axe => (
             <div className={classes.gridItems} key={axe.id}>
@@ -137,7 +140,7 @@ class AStep2 extends Component {
                 <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.name}</Typography>
                 <List>
                   {axe.skills.map(skill => (
-                    <SkillSet key={skill.id} axeId={axe.id} skillId={skill.id} skillName={skill.name} theme={theme} handleRating={this.handleRating} skillValue={this.skillValue} />
+                    <SkillSet key={skill.id} axeId={axe.id} skillId={skill.id} skillName={skill.name} handleRating={this.handleRating} skillValue={this.skillValue} />
                   ))}
                 </List>
               </Paper>

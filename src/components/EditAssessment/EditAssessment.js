@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { Button, Typography, FormHelperText, Grid, Paper, List, ListItem } from '@material-ui/core';
+import { Button, Typography, FormHelperText, Paper, List } from '@material-ui/core';
 import sizeMe from 'react-sizeme';
 import StackGrid from 'react-stack-grid';
 import { Mutation, withApollo } from 'react-apollo';
 import { withRouter } from 'react-router-dom';
 import gql from 'graphql-tag';
-import ReactStars from 'react-stars';
 import { withSnackbar } from 'notistack';
 import { withStyles } from '@material-ui/core/styles';
-import { SkillSet, theme } from '..';
+import { SkillSet, SkillLegend } from '..';
 import editAssessmentStyles from './EditAssessment.styles';
 import { AUTH_USERID } from '../../constants';
 
@@ -169,6 +168,9 @@ class EditAssessment extends Component {
           <Typography variant="h5" component="h3" className={classes.jobTitle}>
             Editer votre auto-évaluation
           </Typography>
+
+          <SkillLegend />
+
           <StackGrid gutterWidth={24} columnWidth={width <= 768 ? '100%' : '50%'}>
           {axes.map(axe => (
             <div className={classes.gridItems} key={axe.axeId}>
@@ -176,7 +178,7 @@ class EditAssessment extends Component {
                 <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.axeName}</Typography>
                 <List>
                   {axe.skills.map(skill => (
-                    <SkillSet key={skill.skillId} axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} theme={theme} handleRating={this.handleRating} skillValue={this.skillValue} />
+                    <SkillSet key={skill.skillId} axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} handleRating={this.handleRating} skillValue={this.skillValue} />
                   ))}
                 </List>
               </Paper>

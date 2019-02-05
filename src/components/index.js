@@ -9,5 +9,6 @@ import Profile from './Profile/Profile';
 import Register from './Register/Register';
 import SignIn from './SignIn/SignIn';
 import SkillSet from './Skills/SkillSet';
+import SkillLegend from './Skills/SkillLegend';
 
-export { App, theme, Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SkillSet, Profile, Register, SignIn };
+export { App, theme, Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SkillSet, SkillLegend, Profile, Register, SignIn };
