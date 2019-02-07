@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Divider, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { Dashboard, BarChart, Layers, PersonAdd }  from '@material-ui/icons';
+import { Dashboard, BarChart, Layers }  from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { withApollo } from 'react-apollo';
 import drawerStyles from './InsideDrawer.styles';

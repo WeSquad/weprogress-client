@@ -27,19 +27,29 @@ const GLOGIN_MUTATION = gql`
 class SignIn extends Component {
   handleAuthenticate = async (token) => {
     const { client } = this.props;
-    const { data } = await client.mutate({
+    client.mutate({
       mutation: GLOGIN_MUTATION,
-      variables: { 'token': token }
+      variables: { 'token': token },
+    }).then(async ({data}) => {
+      const { glogin } = await data;
+      this._confirm(glogin);
+    }).catch((error) => {
+      this.handleError(error);
+      const auth2 = window.gapi.auth2.getAuthInstance();
+      if (auth2 != null) {
+        auth2.signOut();
+      }
     });
-
-    this._confirm(data);
   };
 
   handleError = (error) => {
+    console.log(error);
     if (error.error && error.error.msg) {
       this.props.enqueueSnackbar(error.error.msg, {
         variant: 'error',
       });
+    } else if (error.error && error.error === "popup_closed_by_user") {
+      console.log("google popup closed")
     } else if (error.graphQLErrors && error.graphQLErrors[0]) {
       this.props.enqueueSnackbar(error.graphQLErrors[0].message, {
         variant: 'error',
@@ -54,16 +64,11 @@ class SignIn extends Component {
     return <FormHelperText>Action impossible</FormHelperText>;
   };
 
-  _confirm = async data => {
-    const { glogin } = data;
-    this._saveUserData(glogin);
-    this.props.history.push(`/`);
-  }
-
-  _saveUserData = glogin => {
+  _confirm = (glogin) => {
     sessionStorage.setItem(AUTH_TOKEN, glogin.token);
     sessionStorage.setItem(AUTH_USERID, glogin.user.id);
     sessionStorage.setItem(AUTH_USERNAME, glogin.user.fullName);
+    this.props.history.push(`/`);
   }
 
   render() {
