@@ -23,25 +23,8 @@ const signInStyles = {
     margin: theme.spacing.unit,
     backgroundColor: theme.palette.secondary.main,
   },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing.unit,
-  },
-  submit: {
-    marginTop: theme.spacing.unit * 3,
-  },
-  errorMsg: {
-    color: 'red'
-  },
-  createAccount: {
-    marginTop: theme.spacing.unit * 2,
-    '& a': {
-      color: theme.palette.primary.main,
-      textDecoration: 'none',
-      '&:hover': {
-        textDecoration: 'underline'
-      }
-    }
+  introduction: {
+    margin: `${theme.spacing.unit * 2}px 0`
   }
 };
 

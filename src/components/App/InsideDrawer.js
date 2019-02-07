@@ -15,7 +15,7 @@ class InsideDrawer extends Component {
     return (
       <div>
         <Divider />
-        {authToken ? (
+        {authToken && (
         <>
           <List>
             <Link to="/" className={classes.menuLink}>
@@ -44,17 +44,6 @@ class InsideDrawer extends Component {
             </Link>
           </List>
         </>
-        ) : (
-        <List>
-          <Link to="/register" className={classes.menuLink}>
-            <ListItem button>
-              <ListItemIcon>
-                <PersonAdd />
-              </ListItemIcon>
-              <ListItemText primary="M'enregister" />
-            </ListItem>
-          </Link>
-        </List>
         )}
       </div>
     );

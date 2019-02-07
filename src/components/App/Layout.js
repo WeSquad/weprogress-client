@@ -6,7 +6,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, Menu, MenuItem, IconButton, Typography, Drawer, Hidden, CssBaseline } from '@material-ui/core';
 import { Menu as MenuIcon, AccountCircle } from '@material-ui/icons';
 
-import { Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SignIn, Register, Profile } from '..';
+import { Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SignIn, Profile } from '..';
 import InsideDrawer from './InsideDrawer';
 import layoutStyles from './Layout.styles';
 import { AUTH_TOKEN } from '../../constants';
@@ -44,10 +44,16 @@ class Layout extends Component {
     this.setState({ anchorEl: null });
   }
 
-  logout = () => {
-    this.props.history.push('/');
-    sessionStorage.clear();
-    this.props.client.resetStore();
+  logout = async () => {
+    const auth2 = await window.gapi.auth2.getAuthInstance();
+    if (auth2 != null) {
+      auth2.signOut().then(() => {
+        sessionStorage.clear();
+        this.props.client.resetStore();
+
+        this.props.history.push('/');
+      });
+    }
   }
 
   render() {
@@ -124,6 +130,7 @@ class Layout extends Component {
             }
           </Toolbar>
         </AppBar>
+        {authToken &&  (
         <nav className={classes.drawer}>
           <Hidden smUp implementation="css">
             <Drawer
@@ -150,6 +157,7 @@ class Layout extends Component {
             </Drawer>
           </Hidden>
         </nav>
+        )}
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Switch>
@@ -163,13 +171,6 @@ class Layout extends Component {
             <Route exact path="/signin" render={() => (
               !authToken? (
                 <SignIn />
-              ) : (
-                <Redirect to="/"/>
-              )
-            )} />
-            <Route exact path='/register' render={() => (
-              !authToken? (
-                <Register />
               ) : (
                 <Redirect to="/"/>
               )

@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { Avatar, Button, FormControlLabel, Checkbox, Paper, Typography, TextField, FormHelperText } from '@material-ui/core';
+import { withRouter } from 'react-router-dom';
+import { Avatar, Paper, Typography, FormHelperText } from '@material-ui/core';
 import { LockOutlined as LockIcon } from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
-import { Mutation } from 'react-apollo';
+import { withApollo } from 'react-apollo';
+import { withSnackbar } from 'notistack';
 import gql from 'graphql-tag';
+import PropTypes from 'prop-types';
 
 import { AUTH_TOKEN, AUTH_USERID, AUTH_USERNAME } from '../../constants';
 import signInStyles from './SignIn.styles';
+import { GoogleSignIn } from '..';
 
-const LOGIN_MUTATION = gql`
-  mutation login($email: String!, $password: String!, $rememberme: Boolean) {
-    login(email: $email, password: $password, rememberme: $rememberme) {
+const GLOGIN_MUTATION = gql`
+  mutation glogin($token: String!) {
+    glogin(token: $token) {
       token
       user {
         id
@@ -23,20 +25,49 @@ const LOGIN_MUTATION = gql`
 `;
 
 class SignIn extends Component {
-  state = {
-    email: '',
-    password: '',
-    rememberme: false,
-    errorMsg: '',
+  handleAuthenticate = async (token) => {
+    const { client } = this.props;
+    const { data } = await client.mutate({
+      mutation: GLOGIN_MUTATION,
+      variables: { 'token': token }
+    });
+
+    this._confirm(data);
   };
 
-  render() {
-    const { email, password, rememberme, errorMsg } = this.state;
-    const { classes } = this.props;
+  handleError = (error) => {
+    if (error.error && error.error.msg) {
+      this.props.enqueueSnackbar(error.error.msg, {
+        variant: 'error',
+      });
+    } else if (error.graphQLErrors && error.graphQLErrors[0]) {
+      this.props.enqueueSnackbar(error.graphQLErrors[0].message, {
+        variant: 'error',
+      });
+    } else {
+      this.props.enqueueSnackbar('Problème technique', {
+        variant: 'error',
+      });
+      console.log(error);
+    }
 
-    const handleError = error => {
-      this.setState({ errorMsg: error.graphQLErrors[0].message});
-    };
+    return <FormHelperText>Action impossible</FormHelperText>;
+  };
+
+  _confirm = async data => {
+    const { glogin } = data;
+    this._saveUserData(glogin);
+    this.props.history.push(`/`);
+  }
+
+  _saveUserData = glogin => {
+    sessionStorage.setItem(AUTH_TOKEN, glogin.token);
+    sessionStorage.setItem(AUTH_USERID, glogin.user.id);
+    sessionStorage.setItem(AUTH_USERNAME, glogin.user.fullName);
+  }
+
+  render() {
+    const { classes } = this.props;
 
     return (
       <main className={classes.main}>
@@ -47,79 +78,20 @@ class SignIn extends Component {
           <Typography component="h1" variant="h5">
             S'identifier
           </Typography>
-            <Mutation
-                mutation={LOGIN_MUTATION}
-                variables={{ email, password, rememberme }}
-                onCompleted={data => this._confirm(data)}
-                onError={error => handleError(error)}
-            >
-            {mutation => (
-            <form className={classes.form} onSubmit={e => {e.preventDefault(); mutation()}}>
-              <TextField
-                id="email"
-                name="email"
-                label="Votre adresse email"
-                value={email}
-                onChange={e => this.setState({ email: e.target.value })}
-                margin="normal"
-                required
-                fullWidth
-              />
-              <TextField
-                id="password"
-                name="password"
-                type="password"
-                label="Mot de passe"
-                value={password}
-                onChange={e => this.setState({ password: e.target.value })}
-                margin="normal"
-                required
-                fullWidth
-              />
-              <FormControlLabel
-                control={<Checkbox name="rememberme" checked={rememberme} onChange={e => this.setState({ rememberme: e.target.checked })} color="primary" />}
-                label="Se souvenir de moi"
-              />
-              {errorMsg && (
-                <FormHelperText className={classes.errorMsg}>{errorMsg}</FormHelperText>
-              )}
-              <Button
-                fullWidth
-                variant="contained"
-                color="primary"
-                type="submit"
-                className={classes.submit}>
-                  Connexion
-              </Button>
-            </form>
-            )}
-          </Mutation>
-        </Paper>
-        <div>
-          <Typography variant="subtitle2" gutterBottom align="center" className={classes.createAccount}>
-            Vous n'avez pas compte? <Link to="/register">Enregistrez-vous ici.</Link>
+          <Typography variant="body2" align="center" className={classes.introduction}>
+            Nous utilisons votre accès Wemanity pour vous identifier ou vous enregistrer sur la plateforme.
           </Typography>
-        </div>
+          <GoogleSignIn handleAuthenticate={this.handleAuthenticate} handleError={this.handleError} />
+        </Paper>
       </main>
     );
-  }
-
-  _confirm = async data => {
-    const { login } = data;
-    this._saveUserData(login);
-    this.props.history.push(`/`);
-  }
-
-  _saveUserData = login => {
-    sessionStorage.setItem(AUTH_TOKEN, login.token);
-    sessionStorage.setItem(AUTH_USERID, login.user.id);
-    sessionStorage.setItem(AUTH_USERNAME, login.user.fullName);
   }
 }
 
 SignIn.propTypes = {
   classes: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired
+  client: PropTypes.object.isRequired,
+  history: PropTypes.object.isRequired,
 };
 
-export default withStyles(signInStyles)(withRouter(SignIn));
+export default withStyles(signInStyles)(withRouter(withSnackbar(withApollo(SignIn))));

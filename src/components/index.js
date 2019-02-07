@@ -6,9 +6,9 @@ import MyAssessments from './MyAssessments/MyAssessments';
 import ViewAssessment from './MyAssessments/ViewAssessment';
 import EditAssessment from './EditAssessment/EditAssessment';
 import Profile from './Profile/Profile';
-import Register from './Register/Register';
 import SignIn from './SignIn/SignIn';
 import SkillSet from './Skills/SkillSet';
 import SkillLegend from './Skills/SkillLegend';
+import GoogleSignIn from './Google/GoogleSignIn';
 
-export { App, theme, Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SkillSet, SkillLegend, Profile, Register, SignIn };
+export { App, theme, Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SkillSet, SkillLegend, Profile, SignIn, GoogleSignIn };
