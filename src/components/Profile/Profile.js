@@ -116,7 +116,7 @@ class Profile extends Component {
     }
   };
 
-  handleSubmit = data => {
+  handleSubmit = () => {
     this.setState({loading: false});
     this.props.enqueueSnackbar('Profil mis à jour', {variant: 'success'});
   };
@@ -143,7 +143,7 @@ class Profile extends Component {
         <Paper className={classes.paper}>
           <Mutation
             mutation={UPDATEME_MUTATION}
-            variables={{ 'id': me.id, 'input': { email: me.email, firstName: me.firstName, lastName: me.lastName, password: me.password }}}
+            variables={{ 'id': me.id, 'input': { firstName: me.firstName, lastName: me.lastName }}}
             onError={error => this.handleError(error)}
             onCompleted={data => this.handleSubmit(data)}
             update={(cache, { data: { updateUser } }) => {
@@ -158,19 +158,6 @@ class Profile extends Component {
                 Votre profil
               </Typography>
               <Grid container spacing={0}>
-                <Grid item xs={12} sm={5} className={classes.gridItems}>
-                  <TextField
-                    id="email"
-                    name="email"
-                    label="Votre adresse email"
-                    value={me && me.email}
-                    onChange={e => this.setState({ me: {...me, email: e.target.value }})}
-                    margin="normal"
-                    required
-                    fullWidth
-                  />
-                </Grid>
-                <Grid item xs={false} sm={7} className={classes.gridItems}></Grid>
                 <Grid item xs={12} sm={5} className={classes.gridItems}>
                   <TextField
                     id="firstName"
@@ -197,19 +184,6 @@ class Profile extends Component {
                   />
                 </Grid>
                 <Grid item xs={false} sm={7} className={classes.gridItems}></Grid>
-                <Grid item xs={12} sm={4} className={classes.gridItems}>
-                  <TextField
-                    id="password"
-                    name="password"
-                    type="password"
-                    label="Mot de passe"
-                    onChange={e => this.setState({ me: {...me, password: e.target.value }})}
-                    margin="normal"
-                    fullWidth
-                    helperText="Laisser vide pour ne pas changer de mot de passe."
-                  />
-                </Grid>
-                <Grid item xs={false} sm={8} className={classes.gridItems}></Grid>
                 <Button
                   variant="contained"
                   color="primary"
