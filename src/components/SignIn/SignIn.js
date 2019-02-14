@@ -30,8 +30,8 @@ class SignIn extends Component {
     client.mutate({
       mutation: GLOGIN_MUTATION,
       variables: { 'token': token },
-    }).then(async ({data}) => {
-      const { glogin } = await data;
+    }).then(({data}) => {
+      const { glogin } = data;
       this._confirm(glogin);
     }).catch((error) => {
       this.handleError(error);

@@ -10,5 +10,6 @@ import SignIn from './SignIn/SignIn';
 import SkillSet from './Skills/SkillSet';
 import SkillLegend from './Skills/SkillLegend';
 import GoogleSignIn from './Google/GoogleSignIn';
+import Notifications from './Notifications/Notifications';
 
-export { App, theme, Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SkillSet, SkillLegend, Profile, SignIn, GoogleSignIn };
+export { App, theme, Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SkillSet, SkillLegend, Profile, SignIn, GoogleSignIn, Notifications };

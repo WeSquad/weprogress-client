@@ -1,20 +1,45 @@
 import React, { Component } from 'react';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { withApollo } from 'react-apollo';
+import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import { AppBar, Toolbar, Menu, MenuItem, IconButton, Typography, Drawer, Hidden, CssBaseline } from '@material-ui/core';
-import { Menu as MenuIcon, AccountCircle } from '@material-ui/icons';
+import { AppBar, Toolbar, Menu, MenuItem, IconButton, Typography, Drawer, Hidden, CssBaseline, Badge } from '@material-ui/core';
+import { Menu as MenuIcon, AccountCircle, Notifications as NotificationsIcon } from '@material-ui/icons';
 
-import { Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SignIn, Profile } from '..';
+import { Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SignIn, Profile, Notifications } from '..';
 import InsideDrawer from './InsideDrawer';
 import layoutStyles from './Layout.styles';
 import { AUTH_TOKEN } from '../../constants';
 
+const UNREAD_NOTIFICATIONS_QUERY = gql`
+  {
+    unReadNotifications {
+      id
+      message
+    }
+  }
+`;
+
 class Layout extends Component {
+  componentDidMount = () => {
+    if (!window.gapi || window.gapi.client){
+      console.log("Pas de réseau")
+    } else {
+      window.gapi.load('auth2', function() {
+        window.gapi.auth2.init();
+      });
+    }
+
+    if (sessionStorage.getItem(AUTH_TOKEN)) {
+      this.fetchNotifications();
+    }
+  }
+
   state = {
     mobileOpen: false,
     anchorEl: null,
+    notificationCount: 0,
   };
 
   handleClose = () => {
@@ -44,6 +69,32 @@ class Layout extends Component {
     this.setState({ anchorEl: null });
   }
 
+  handleNotifications = () => {
+    this.props.history.push('/notifications');
+  }
+
+  handleNotificationsRead = () => {
+    const { client } = this.props;
+    const data = client.cache.readQuery({ query: UNREAD_NOTIFICATIONS_QUERY });
+    data.unReadNotifications = [];
+    client.cache.writeQuery({ query: UNREAD_NOTIFICATIONS_QUERY, data });
+    this.setState({"notificationCount": 0});
+  }
+
+  fetchNotifications = () => {
+    const { client } = this.props;
+    const watchedUnreadNotifications = client.watchQuery({
+      query: UNREAD_NOTIFICATIONS_QUERY,
+    });
+
+    watchedUnreadNotifications.startPolling(10000);
+
+    const subscription = watchedUnreadNotifications.subscribe(({data}) => {
+      const { unReadNotifications } = data;
+      this.setState({"notificationCount": unReadNotifications.length});
+    });
+  }
+
   logout = async () => {
     const auth2 = await window.gapi.auth2.getAuthInstance();
     if (auth2 != null) {
@@ -58,7 +109,7 @@ class Layout extends Component {
 
   render() {
     const { classes } = this.props;
-    const { mobileOpen, anchorEl } = this.state;
+    const { mobileOpen, anchorEl, notificationCount } = this.state;
     const authToken = sessionStorage.getItem(AUTH_TOKEN);
     const openProfil = Boolean(anchorEl);
 
@@ -84,6 +135,17 @@ class Layout extends Component {
             >
               Weprogress
             </Typography>
+            {authToken && (
+            <IconButton color="inherit" onClick={this.handleNotifications}>
+            {notificationCount && notificationCount > 0 ? (
+              <Badge badgeContent={notificationCount} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            ): (
+              <NotificationsIcon />
+            ) }
+            </IconButton>
+            )}
             <IconButton
                   aria-owns="menu-appbar"
                   aria-haspopup="true"
@@ -206,6 +268,13 @@ class Layout extends Component {
             <Route exact path="/profile" render={() => (
               authToken? (
                 <Profile />
+              ) : (
+                <Redirect to="/signin"/>
+              )
+            )} />
+            <Route exact path="/notifications" render={() => (
+              authToken? (
+                <Notifications handleNotificationsRead={this.handleNotificationsRead} newNotifs={notificationCount > 0 ? true : false} />
               ) : (
                 <Redirect to="/signin"/>
               )
