@@ -89,21 +89,30 @@ class Layout extends Component {
 
     watchedUnreadNotifications.startPolling(10000);
 
-    const subscription = watchedUnreadNotifications.subscribe(({data}) => {
+    watchedUnreadNotifications.subscribe(({data}) => {
       const { unReadNotifications } = data;
       this.setState({"notificationCount": unReadNotifications.length});
     });
   }
 
   logout = async () => {
-    const auth2 = await window.gapi.auth2.getAuthInstance();
-    if (auth2 != null) {
-      auth2.signOut().then(() => {
-        sessionStorage.clear();
-        this.props.client.resetStore();
+    if (!window.gapi || window.gapi.client){
+      const auth2 = await window.gapi.auth2.getAuthInstance();
+      if (auth2 != null) {
+        auth2.signOut().then(() => {
+          sessionStorage.clear();
+          this.props.client.clearStore();
+          this.props.client.resetStore();
 
-        this.props.history.push('/');
-      });
+          this.props.history.push('/');
+        });
+      }
+    } else {
+      sessionStorage.clear();
+      this.props.client.clearStore();
+      this.props.client.resetStore();
+
+      this.props.history.push('/');
     }
   }
 
