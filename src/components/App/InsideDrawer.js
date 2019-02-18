@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Divider, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import { Dashboard, BarChart, Layers }  from '@material-ui/icons';
+import { Dashboard, BarChart, Layers, Face }  from '@material-ui/icons';
 import { withStyles } from '@material-ui/core/styles';
 import { withApollo } from 'react-apollo';
 import drawerStyles from './InsideDrawer.styles';
@@ -32,6 +32,14 @@ class InsideDrawer extends Component {
                   <BarChart />
                 </ListItemIcon>
                 <ListItemText primary="Mes évaluations" />
+              </ListItem>
+            </Link>
+            <Link to="/sharedassessments" className={classes.menuLink}>
+              <ListItem button>
+                <ListItemIcon>
+                  <Face />
+                </ListItemIcon>
+                <ListItemText primary="Évaluations partagées" />
               </ListItem>
             </Link>
             <Link to="/makeassessment" className={classes.menuLink}>

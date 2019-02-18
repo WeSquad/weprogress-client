@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import { Typography, Paper, FormHelperText, Button } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { Share as ShareIcon, Edit as EditIcon } from '@material-ui/icons';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { Link } from 'react-router-dom';
 import { Radar } from 'react-chartjs-2';
+import { withStyles } from '@material-ui/core/styles';
 import { withApollo } from 'react-apollo';
+import { withSnackbar } from 'notistack';
 import gql from 'graphql-tag';
 import assessmentStyles from '../MakeAssessment/MakeAssessment.styles';
 import { theme } from '..';
+import ShareAssessment from './ShareAssessment';
 
 const ASSESSMENT_RATES_QUERY = gql`
   query assessmentRates($id: ID!){
@@ -26,13 +29,14 @@ class ViewAssessment extends Component {
     this.state = {
       loadingQuery: true,
       axesNames: [],
-      axesValues: []
+      axesValues: [],
+      openJobDialog: false,
     };
 
     this.fetchRates(props);
   };
 
-  async fetchRates(props) {
+  fetchRates = async (props) => {
     const { client, id } = props;
     const { data } = await client.query({
       query: ASSESSMENT_RATES_QUERY,
@@ -53,6 +57,31 @@ class ViewAssessment extends Component {
       axesValues: values,
       loadingQuery: false,
     });
+  };
+
+  handleDialogOpen = () => {
+    this.setState({"openJobDialog": true});
+  }
+
+  handleDialogClose = () => {
+    this.setState({"openJobDialog": false});
+  }
+
+  handleDialogSend = () => {
+    this.props.enqueueSnackbar('Assessment partagé', {variant: 'success'});
+    this.setState({"openJobDialog": false});
+  }
+
+  handleDialogError = (error) => {
+    if (error.graphQLErrors[0]) {
+      this.props.enqueueSnackbar(error.graphQLErrors[0].message, {
+        variant: 'error',
+      });
+    } else {
+      this.props.enqueueSnackbar('Problème technique', {
+        variant: 'error',
+      });
+    }
   };
 
   render() {
@@ -100,9 +129,15 @@ class ViewAssessment extends Component {
             </Typography>
             <Paper className={classes.paper}>
               <div className={classes.canvasContainer}>
-                <Button color="secondary" variant="contained" component={({...props}) => <Link to={"/editassessment/" + this.props.id} {...props} />}>
-                  Editer cet auto-évaluation
-                </Button>
+                <div className={classes.actionsContainer}>
+                  <Button color="secondary" variant="contained" className={classes.actionsButton} component={({...props}) => <Link to={"/editassessment/" + this.props.id} {...props} />}>
+                    <EditIcon /> Editer l'assessment
+                  </Button>
+                  <Button color="primary" variant="contained" className={classes.actionsButton} onClick={this.handleDialogOpen}>
+                    <ShareIcon /> Partager l'assessment
+                  </Button>
+                  <ShareAssessment open={this.state.openJobDialog} handleClose={this.handleDialogClose} handleSend={this.handleDialogSend} handleDialogError={this.handleDialogError} assessmentId={this.props.id} />
+                </div>
                 <Radar data={data} options={options} />
               </div>
             </Paper>
@@ -113,4 +148,4 @@ class ViewAssessment extends Component {
   }
 }
 
-export default withStyles(assessmentStyles)(withApollo(ViewAssessment));
+export default withSnackbar(withStyles(assessmentStyles)(withApollo(ViewAssessment)));

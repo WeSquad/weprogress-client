@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, Menu, MenuItem, IconButton, Typography, Drawer, Hidden, CssBaseline, Badge } from '@material-ui/core';
 import { Menu as MenuIcon, AccountCircle, Notifications as NotificationsIcon } from '@material-ui/icons';
 
-import { Dashboard, MakeAssessment, MyAssessments, ViewAssessment, EditAssessment, SignIn, Profile, Notifications } from '..';
+import { Dashboard, MakeAssessment, MyAssessments, SharedAssessments, ViewAssessment, ViewSharedAssessment, EditAssessment, SignIn, Profile, Notifications } from '..';
 import InsideDrawer from './InsideDrawer';
 import layoutStyles from './Layout.styles';
 import { AUTH_TOKEN } from '../../constants';
@@ -96,23 +96,15 @@ class Layout extends Component {
   }
 
   logout = async () => {
-    if (!window.gapi || window.gapi.client){
-      const auth2 = await window.gapi.auth2.getAuthInstance();
-      if (auth2 != null) {
-        auth2.signOut().then(() => {
-          sessionStorage.clear();
-          this.props.client.clearStore();
-          this.props.client.resetStore();
+    const auth2 = await window.gapi.auth2.getAuthInstance();
+    if (auth2 != null) {
+      auth2.signOut().then(() => {
+        sessionStorage.clear();
+        this.props.client.clearStore();
+        this.props.client.resetStore();
 
-          this.props.history.push('/');
-        });
-      }
-    } else {
-      sessionStorage.clear();
-      this.props.client.clearStore();
-      this.props.client.resetStore();
-
-      this.props.history.push('/');
+        this.props.history.push('/');
+      });
     }
   }
 
@@ -253,9 +245,23 @@ class Layout extends Component {
                 <Redirect to="/signin"/>
               )
             )} />
+            <Route exact path="/sharedassessments" render={() => (
+              authToken? (
+                <SharedAssessments />
+              ) : (
+                <Redirect to="/signin"/>
+              )
+            )} />
             <Route exact path="/viewassessment/:id" render={({ match }) => (
               authToken? (
                 <ViewAssessment key={match.params.id} id={match.params.id} />
+              ) : (
+                <Redirect to="/signin"/>
+              )
+            )} />
+            <Route exact path="/viewsharedassessment/:id" render={({ match }) => (
+              authToken? (
+                <ViewSharedAssessment key={match.params.id} id={match.params.id} />
               ) : (
                 <Redirect to="/signin"/>
               )

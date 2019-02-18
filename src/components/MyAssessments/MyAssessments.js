@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
-import myAssessmentStyles from './MyAssessments.styles';
-import { AUTH_USERID, AUTH_TOKEN } from '../../constants';
-import { Button, Typography, Grid, Card, CardContent, CardActions } from '@material-ui/core';
+import { Typography, FormHelperText } from '@material-ui/core';
 import gql from 'graphql-tag';
-import classNames from 'classnames';
-import { withSnackbar } from 'notistack';
-import { withApollo } from 'react-apollo';
+import { Query } from 'react-apollo';
+
+import myAssessmentStyles from './MyAssessments.styles';
+import AssessmentSummary from './AssessmentSummary';
 
 const MY_ASSESSMENTS_QUERY = gql`
-  query assessmentsByUser($userId: ID!, $limit: Float){
-    assessmentsByUser(userId: $userId, limit: $limit) {
+  query myAssessments($limit: Float){
+    myAssessments(limit: $limit) {
       id
       createdAt
       job {
@@ -22,35 +20,13 @@ const MY_ASSESSMENTS_QUERY = gql`
 `;
 
 class MyAssessments extends Component {
-  constructor(props) {
-    super();
-    this.state = {
-      loadingQuery: true,
-      assessments: [],
-    };
-
-    this.fetchMyAssessments(props);
-  };
-
-  async fetchMyAssessments(props) {
-    if (sessionStorage.getItem(AUTH_TOKEN)) {
-      const { client } = props;
-      const { data } = await client.query({
-        query: MY_ASSESSMENTS_QUERY,
-        variables: { "userId": sessionStorage.getItem(AUTH_USERID), "limit": 3 },
-        fetchPolicy: "no-cache"
-      });
-
-      this.setState({
-        assessments: data.assessmentsByUser,
-        loadingQuery: false,
-      });
-    }
+  handleError = error => {
+    console.log(error);
+    return <FormHelperText>Action impossible</FormHelperText>;
   };
 
   render() {
     const { classes } = this.props;
-    const { assessments } = this.state;
 
     return (
       <>
@@ -65,41 +41,25 @@ class MyAssessments extends Component {
             </Typography>
           </div>
         </div>
-        <div className={classNames(classes.layout, classes.cardGrid)}>
-          <Grid container spacing={40}>
-            {assessments.map(assessment => {
-              let date = new Date(assessment.createdAt);
-              let formattedDate = date.toLocaleDateString("fr-FR");
-              let hourMinutes = `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
+        <Query query={MY_ASSESSMENTS_QUERY} variables={{"limit" : 5}} fetchPolicy="no-cache" partialRefetch="true">
+          {({ loading, error, data }) => {
+            if (error) {
+              return this.handleError(error);
+            }
+            if (loading) return <FormHelperText>Chargement...</FormHelperText>;
 
-              return (
-              <Grid item key={assessment.id} sm={6}>
-                <Card className={classes.card}>
-                  <CardContent className={classes.cardContent}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      Assessment de {assessment.job.name}
-                    </Typography>
-                    <Typography>
-                      Le {formattedDate} à {hourMinutes}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" color="primary" variant="contained" component={({...props}) => <Link to={"/viewassessment/" + assessment.id} {...props} />}>
-                      Afficher
-                    </Button>
-                    <Button size="small" variant="contained" component={({...props}) => <Link to={"/editassessment/" + assessment.id} {...props} />}>
-                      Éditer
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-              )
-            })}
-          </Grid>
-        </div>
+            return (
+              <div className={classes.layout}>
+              {data.myAssessments.map(assessment => {
+                return <AssessmentSummary assessment={assessment} key={assessment.id} />
+              })}
+              </div>
+            );
+          }}
+        </Query>
       </>
     );
   }
 }
 
-export default withStyles(myAssessmentStyles)(withSnackbar(withApollo(MyAssessments)));
+export default withStyles(myAssessmentStyles)(MyAssessments);
