@@ -44,7 +44,7 @@ class SkillWishes extends Component {
       <div>
         <Tooltip title="J'adore ça" aria-label="J'adore ça" placement="top">
           <IconButton className={classes.button} onClick={this.handleInterest}>
-            <Favorite fontSize="small" color={interest? "primary" : "default"} />
+            <Favorite fontSize="small" color={interest? "primary" : "inherit"} />
           </IconButton>
         </Tooltip>
         <Tooltip title="J'ai besoin de training" aria-label="J'ai besoin de training" placement="top">
@@ -54,7 +54,7 @@ class SkillWishes extends Component {
         </Tooltip>
         <Tooltip title="Je ne veux plus pratiquer" aria-label="Je ne veux plus pratiquer" placement="top">
           <IconButton className={classes.button} aria-label="Je ne suis plus intéressé" onClick={this.handleNoMore}>
-            <NotInterested fontSize="small" color={noMore? "secondary" : "default"} />
+            <NotInterested fontSize="small" color={noMore? "secondary" : "inherit"} />
           </IconButton>
         </Tooltip>
       </div>

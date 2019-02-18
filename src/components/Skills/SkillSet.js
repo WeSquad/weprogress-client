@@ -15,6 +15,22 @@ const styles = theme => ({
 });
 
 class SkillSet extends Component {
+  constructor(props) {
+    super();
+
+    this.state = {
+      stars: 4,
+    };
+
+    this.setStarts(props);
+  };
+
+  setStarts = (props) => {
+    if (props.soft === true) {
+      this.setState({"stars": 5})
+    }
+  }
+
   render() {
     const { classes, skillId, skillName, axeId } = this.props;
 
@@ -26,7 +42,7 @@ class SkillSet extends Component {
           </Grid>
           <Grid item xs={3}>
             <ReactStars
-              count={4}
+              count={this.state.stars}
               size={18}
               half={false}
               color2="#fbc02d"

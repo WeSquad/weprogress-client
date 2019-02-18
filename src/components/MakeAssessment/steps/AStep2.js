@@ -18,6 +18,7 @@ const JOB_QUERY = gql`
       axes {
         id
         name
+        type
         skills {
           id
           name
@@ -144,19 +145,38 @@ class AStep2 extends Component {
 
           <SkillLegend />
 
+          <Typography variant="h5" component="h3" gutterBottom>Hard Skills</Typography>
           <StackGrid gutterWidth={24} columnWidth={width <= 768 ? '100%' : '50%'}>
-          {job.axes.map(axe => (
-            <div className={classes.gridItems} key={axe.id}>
-              <Paper className={classes.paper}>
-                <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.name}</Typography>
-                <List>
-                  {axe.skills.map(skill => (
-                    <SkillSet key={skill.id} axeId={axe.id} skillId={skill.id} skillName={skill.name} skillValue={this.skillValue} skillWishes={{"interest": false, "training": false, "noMore": false}} handleRating={this.handleRating} handleWishes={this.handleWishes} />
-                  ))}
-                </List>
-              </Paper>
-            </div>
-          ))}
+            {job.axes.map(axe => (
+              axe.type === "hardSkills" && (
+                <div className={classes.gridItems} key={axe.id}>
+                  <Paper className={classes.paper}>
+                    <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.name}</Typography>
+                    <List>
+                      {axe.skills.map(skill => (
+                        <SkillSet soft={false} key={skill.id} axeId={axe.id} skillId={skill.id} skillName={skill.name} skillValue={this.skillValue} skillWishes={{"interest": false, "training": false, "noMore": false}} handleRating={this.handleRating} handleWishes={this.handleWishes} />
+                      ))}
+                    </List>
+                  </Paper>
+                </div>
+              )
+            ))}
+          </StackGrid>
+          <Typography variant="h5" component="h3" gutterBottom>Soft Skills</Typography>
+          <StackGrid gutterWidth={24} columnWidth={width <= 768 ? '100%' : '50%'}>
+            {job.axes.map(axe => (
+              axe.type === "softSkills" && (
+              <div className={classes.gridItems} key={axe.id}>
+                <Paper className={classes.paper}>
+                  <List>
+                    {axe.skills.map(skill => (
+                      <SkillSet soft={true} key={skill.id} axeId={axe.id} skillId={skill.id} skillName={skill.name} skillValue={this.skillValue} skillWishes={{"interest": false, "training": false, "noMore": false}} handleRating={this.handleRating} handleWishes={this.handleWishes} />
+                    ))}
+                  </List>
+                </Paper>
+              </div>
+              )
+            ))}
           </StackGrid>
           <Mutation
             mutation={CREATE_ASSESSMENT_MUTATION}

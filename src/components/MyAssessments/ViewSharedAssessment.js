@@ -167,7 +167,7 @@ class ViewSharedAssessment extends Component {
                       <List>
                         <Grid container spacing={0}>
                           {axe.skills.map(skill => (
-                            <Grid item sm={6} key={skill.skillId}>
+                            <Grid item sm={6} xs={12} key={skill.skillId}>
                               <ReadOnlySkillSet axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} skillValue={skill.skillRate} skillWishes={skill.wishes} />
                             </Grid>
                           ))}
