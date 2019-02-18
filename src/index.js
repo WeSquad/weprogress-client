@@ -13,8 +13,10 @@ import { SnackbarProvider } from 'notistack';
 
 import { AUTH_TOKEN } from './constants';
 
+require('dotenv').config();
+
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000/graphql'
+  uri: process.env.REACT_APP_GRAPHQL_URL
 });
 
 const authLink = setContext((_, { headers }) => {

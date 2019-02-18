@@ -1,6 +1,7 @@
 {
   "name": "weprogress-client",
-  "version": "0.0.1",
+  "description": "WeProgress Frontend",
+  "version": "1.0.0",
   "private": true,
   "author": "Nicolas Pinon",
   "dependencies": {
@@ -11,6 +12,7 @@
     "apollo-link-context": "^1.0.14",
     "autosuggest-highlight": "^3.1.1",
     "chart.js": "^2.7.3",
+    "dotenv": "^6.2.0",
     "graphql": "^14.0.2",
     "notistack": "^0.4.1",
     "react": "^16.7.0",
@@ -35,5 +37,6 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "license": "MIT"
 }

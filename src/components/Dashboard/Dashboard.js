@@ -4,7 +4,7 @@ class Dashboard extends Component {
   render() {
 
     return (
-      <p>Hello!</p>
+      <p>Very soon :) (Agile inside)</p>
     );
   }
 }
