@@ -15,24 +15,8 @@ const styles = theme => ({
 });
 
 class SkillSet extends Component {
-  constructor(props) {
-    super();
-
-    this.state = {
-      stars: 4,
-    };
-
-    this.setStarts(props);
-  };
-
-  setStarts = (props) => {
-    if (props.soft === true) {
-      this.setState({"stars": 5})
-    }
-  }
-
   render() {
-    const { classes, skillId, skillName, axeId } = this.props;
+    const { classes, skillId, skillName, skillWishes, axeId, soft } = this.props;
 
     return (
       <ListItem className={classes.listItem} key={skillId}>
@@ -42,7 +26,7 @@ class SkillSet extends Component {
           </Grid>
           <Grid item xs={3}>
             <ReactStars
-              count={this.state.stars}
+              count={soft? 5 : 4}
               size={18}
               half={false}
               color2="#fbc02d"
@@ -50,9 +34,11 @@ class SkillSet extends Component {
               value={this.props.skillValue(skillId, axeId)}
             />
           </Grid>
+          {soft === false && (
           <Grid item xs={2}>
-            <SkillWishes handleWishes={this.props.handleWishes} skillId={skillId} axeId={axeId} wishes={this.props.skillWishes} />
+            <SkillWishes handleWishes={this.props.handleWishes} skillId={skillId} axeId={axeId} wishes={skillWishes} />
           </Grid>
+          )}
         </Grid>
       </ListItem>
     );

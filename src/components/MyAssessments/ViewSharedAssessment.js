@@ -30,6 +30,7 @@ const ASSESSMENT_DATAILS_QUERY = gql`
       axes {
         axeId
         axeName
+        axeType
         skills {
           skillId
           skillName
@@ -165,10 +166,10 @@ class ViewSharedAssessment extends Component {
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                       <List>
-                        <Grid container spacing={0}>
+                        <Grid container spacing={16}>
                           {axe.skills.map(skill => (
                             <Grid item sm={6} xs={12} key={skill.skillId}>
-                              <ReadOnlySkillSet axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} skillValue={skill.skillRate} skillWishes={skill.wishes} />
+                              <ReadOnlySkillSet soft={axe.axeType === "hardSkills" ? false : true} axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} skillValue={skill.skillRate} skillWishes={skill.wishes} />
                             </Grid>
                           ))}
                         </Grid>

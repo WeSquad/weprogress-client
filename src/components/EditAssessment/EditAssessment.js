@@ -189,7 +189,7 @@ class EditAssessment extends Component {
                   <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.axeName}</Typography>
                   <List>
                     {axe.skills.map(skill => (
-                      <SkillSet key={skill.skillId} axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} skillValue={this.skillValue} skillWishes={skill.wishes} handleRating={this.handleRating} handleWishes={this.handleWishes} />
+                      <SkillSet soft={false} key={skill.skillId} axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} skillValue={this.skillValue} skillWishes={skill.wishes} handleRating={this.handleRating} handleWishes={this.handleWishes} />
                     ))}
                   </List>
                 </Paper>
@@ -207,7 +207,7 @@ class EditAssessment extends Component {
                   <Typography variant="subtitle2" gutterBottom>Sur la partie: {axe.axeName}</Typography>
                   <List>
                     {axe.skills.map(skill => (
-                      <SkillSet key={skill.skillId} axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} skillValue={this.skillValue} skillWishes={skill.wishes} handleRating={this.handleRating} handleWishes={this.handleWishes} />
+                      <SkillSet soft={true} key={skill.skillId} axeId={axe.axeId} skillId={skill.skillId} skillName={skill.skillName} skillValue={this.skillValue} skillWishes={skill.wishes} handleRating={this.handleRating} handleWishes={this.handleWishes} />
                     ))}
                   </List>
                 </Paper>

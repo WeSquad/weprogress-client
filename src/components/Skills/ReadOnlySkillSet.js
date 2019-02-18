@@ -16,7 +16,7 @@ const styles = theme => ({
 
 class ReadOnlySkillSet extends Component {
   render() {
-    const { classes, skillId, skillName, skillValue } = this.props;
+    const { classes, skillId, skillName, skillValue, skillWishes, soft } = this.props;
 
     return (
       <ListItem className={classes.listItem} key={skillId}>
@@ -26,7 +26,7 @@ class ReadOnlySkillSet extends Component {
           </Grid>
           <Grid item xs={3}>
             <ReactStars
-              count={4}
+              count={soft? 5 : 4}
               size={18}
               half={false}
               color2="#fbc02d"
@@ -34,9 +34,11 @@ class ReadOnlySkillSet extends Component {
               edit={false}
             />
           </Grid>
+          {soft === false && (
           <Grid item xs={2}>
-            <ReadOnlySkillWishes skillId={skillId} wishes={this.props.skillWishes} />
+            <ReadOnlySkillWishes skillId={skillId} wishes={skillWishes} />
           </Grid>
+          )}
         </Grid>
       </ListItem>
     );
