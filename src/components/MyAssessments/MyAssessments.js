@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
 import { Typography, FormHelperText } from '@material-ui/core';
 import gql from 'graphql-tag';
-import { Query } from 'react-apollo';
+import { withApollo } from 'react-apollo';
 
 import myAssessmentStyles from './MyAssessments.styles';
 import AssessmentSummary from './AssessmentSummary';
@@ -19,14 +19,64 @@ const MY_ASSESSMENTS_QUERY = gql`
   }
 `;
 
+const DELETE_ASSESSMENT = gql`
+  mutation deleteAssessment($id: ID!){
+    deleteAssessment(id: $id) {
+      id
+      createdAt
+      job {
+        name
+      }
+    }
+  }
+`;
+
 class MyAssessments extends Component {
+  constructor(props) {
+    super();
+    this.state = {
+      loadingQuery: true,
+      myAssessments: [],
+    };
+
+    this.fetchMyAssessments(props);
+  };
+
+  async fetchMyAssessments(props) {
+    const { client } = props;
+    const { data } = await client.query({
+      query: MY_ASSESSMENTS_QUERY,
+      variables: {"limit" : 5},
+      fetchPolicy: "no-cache"
+    });
+
+    this.setState({
+      myAssessments: data.myAssessments,
+      loadingQuery: false,
+    });
+  };
+
   handleError = error => {
     console.log(error);
     return <FormHelperText>Action impossible</FormHelperText>;
   };
 
+  handleRemove = (id) => {
+    const { client } = this.props;
+
+    client.mutate({
+      mutation: DELETE_ASSESSMENT,
+      variables: { id : id }
+    }).then(() => {
+      this.fetchMyAssessments(this.props);
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
+
   render() {
     const { classes } = this.props;
+    const { myAssessments, loadingQuery } = this.state;
 
     return (
       <>
@@ -41,25 +91,19 @@ class MyAssessments extends Component {
             </Typography>
           </div>
         </div>
-        <Query query={MY_ASSESSMENTS_QUERY} variables={{"limit" : 5}} fetchPolicy="no-cache" partialRefetch="true">
-          {({ loading, error, data }) => {
-            if (error) {
-              return this.handleError(error);
-            }
-            if (loading) return <FormHelperText>Chargement...</FormHelperText>;
-
-            return (
-              <div className={classes.layout}>
-              {data.myAssessments.map(assessment => {
-                return <AssessmentSummary assessment={assessment} key={assessment.id} />
-              })}
-              </div>
-            );
-          }}
-        </Query>
+        {loadingQuery && (
+          <FormHelperText>Chargement...</FormHelperText>
+        )}
+        {myAssessments && (
+          <div className={classes.layout}>
+            {myAssessments.map(assessment => {
+              return <AssessmentSummary assessment={assessment} key={assessment.id} handleRemove={this.handleRemove} />
+            })}
+          </div>
+        )}
       </>
     );
   }
 }
 
-export default withStyles(myAssessmentStyles)(MyAssessments);
+export default withStyles(myAssessmentStyles)(withApollo(MyAssessments));

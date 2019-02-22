@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
 import { Typography, Paper, Button, Avatar } from '@material-ui/core';
 import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { Link } from 'react-router-dom';
+import { red } from '@material-ui/core/colors';
+
+const redTheme = createMuiTheme({ palette: { primary: red }, typography: { useNextVariants: true } })
 
 const styles = theme => ({
   root: {
@@ -62,6 +66,10 @@ const styles = theme => ({
 
 class AssessmentSummary extends Component {
 
+  handleRemove = () => {
+    this.props.handleRemove(this.props.assessment.id);
+  }
+
   render() {
     const { classes, assessment } = this.props;
 
@@ -104,6 +112,11 @@ class AssessmentSummary extends Component {
                 <Button variant="contained" color="primary" className={classes.secondary} component={({...props}) => <Link to={"/editassessment/" + assessment.id} {...props} />}>
                   Editer
                 </Button>
+                <MuiThemeProvider theme={redTheme}>
+                  <Button variant="contained" color="primary" className={classes.secondary} onClick={this.handleRemove}>
+                    <DeleteIcon />
+                  </Button>
+                </MuiThemeProvider>
               </div>
             </div>
           </div>
