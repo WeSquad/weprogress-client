@@ -102,7 +102,7 @@ class EditAssessment extends Component {
 
     const newAxes = [];
     axes.forEach(axe => {
-      const {axeName, ...newAxe} = axe;
+      const {axeName, axeType, ...newAxe} = axe;
       const newSkills = [];
       axe.skills.forEach(oldSkill => {
         const {skillName, ...newSkill} = oldSkill;
