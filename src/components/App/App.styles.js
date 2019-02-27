@@ -10,6 +10,16 @@ const theme = createMuiTheme({
     error: red,
   },
   typography: { useNextVariants: true },
+  overrides: {
+    MuiTooltip: {
+      tooltip: {
+        fontSize: "0.8em",
+        color: "white",
+        backgroundColor: "black",
+        opacity: "0.5"
+      }
+    }
+  }
 });
 
 export default theme;

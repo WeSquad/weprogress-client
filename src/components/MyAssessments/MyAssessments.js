@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Typography, FormHelperText } from '@material-ui/core';
+import { Typography, FormHelperText, Fab, Tooltip } from '@material-ui/core';
+import { Shuffle as ShuffleIcon } from '@material-ui/icons';
 import gql from 'graphql-tag';
 import { withApollo } from 'react-apollo';
 
 import myAssessmentStyles from './MyAssessments.styles';
 import AssessmentSummary from './AssessmentSummary';
+import CompareAssessmentsDialog from './CompareAssessmentsDialog';
 
 const MY_ASSESSMENTS_QUERY = gql`
   query myAssessments($limit: Float){
@@ -53,6 +55,7 @@ class MyAssessments extends Component {
     this.setState({
       myAssessments: data.myAssessments,
       loadingQuery: false,
+      openCompare: false,
     });
   };
 
@@ -74,9 +77,21 @@ class MyAssessments extends Component {
     });
   }
 
+  handleCompare = () => {
+    this.setState(prevState => ({
+      openCompare: !prevState.openCompare
+    }));
+  }
+
+  handleCompareDialogClose = () => {
+    this.setState(prevState => ({
+      openCompare: !prevState.openCompare
+    }));
+  }
+
   render() {
     const { classes } = this.props;
-    const { myAssessments, loadingQuery } = this.state;
+    const { myAssessments, loadingQuery, openCompare } = this.state;
 
     return (
       <>
@@ -99,6 +114,16 @@ class MyAssessments extends Component {
             {myAssessments.map(assessment => {
               return <AssessmentSummary assessment={assessment} key={assessment.id} handleRemove={this.handleRemove} />
             })}
+          </div>
+        )}
+        {myAssessments.length > 1 && (
+          <div id="compare-assessments">
+            <Tooltip title="Comparer mes Assessments" aria-label="Comparer mes Assessments">
+              <Fab className={classes.fab} color="secondary" onClick={this.handleCompare}>
+                <ShuffleIcon />
+              </Fab>
+            </Tooltip>
+            <CompareAssessmentsDialog assessments={myAssessments} opened={openCompare} handleClose={this.handleCompareDialogClose} />
           </div>
         )}
       </>
