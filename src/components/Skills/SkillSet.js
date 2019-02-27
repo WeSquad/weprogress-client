@@ -15,6 +15,25 @@ const styles = theme => ({
 });
 
 class SkillSet extends Component {
+  constructor(props) {
+    super();
+    this.state = {
+      starsValue: props.skillValue(props.skillId, props.axeId),
+    };
+  };
+
+  fetchValue = (ratingChanged) => {
+    this.setState({ "starsValue": ratingChanged });
+  }
+
+  handleChange = (ratingChanged) => {
+    if (this.state.starsValue === ratingChanged) {
+      ratingChanged = 0;
+    }
+    this.props.handleRating(ratingChanged, this.props.skillId, this.props.axeId);
+    this.fetchValue(ratingChanged);
+  }
+
   render() {
     const { classes, skillId, skillName, skillWishes, axeId, soft } = this.props;
 
@@ -30,8 +49,8 @@ class SkillSet extends Component {
               size={18}
               half={false}
               color2="#fbc02d"
-              onChange={ratingChanged => {this.props.handleRating(ratingChanged, skillId, axeId)}}
-              value={this.props.skillValue(skillId, axeId)}
+              onChange={this.handleChange}
+              value={this.state.starsValue}
             />
           </Grid>
           {soft === false && (
