@@ -63,25 +63,25 @@ class SkillLegend extends Component {
                   <List className={classes.listItems}>
                     <ListItem className={classes.listItem}>
                       <StarRate fontSize="small" className={classes.starSvg} />
-                      <Typography>: Peu</Typography>
+                      <Typography>: Niveau 1</Typography>
                     </ListItem>
                     <ListItem className={classes.listItem}>
                       <StarRate fontSize="small" className={classes.starSvg} />
                       <StarRate fontSize="small" className={classes.starSvg} />
-                      <Typography>: Je commence</Typography>
+                      <Typography>: Niveau 2</Typography>
                     </ListItem>
                     <ListItem className={classes.listItem} >
                       <StarRate fontSize="small" className={classes.starSvg} />
                       <StarRate fontSize="small" className={classes.starSvg} />
                       <StarRate fontSize="small" className={classes.starSvg} />
-                      <Typography>: Moyennement</Typography>
+                      <Typography>: Niveau 3</Typography>
                     </ListItem>
                     <ListItem className={classes.listItem}>
                       <StarRate fontSize="small" className={classes.starSvg} />
                       <StarRate fontSize="small" className={classes.starSvg} />
                       <StarRate fontSize="small" className={classes.starSvg} />
                       <StarRate fontSize="small" className={classes.starSvg} />
-                      <Typography>: Beaucoup</Typography>
+                      <Typography>: Niveau 4</Typography>
                     </ListItem>
                     <ListItem className={classes.listItem}>
                       <StarRate fontSize="small" className={classes.starSvg} />
@@ -89,7 +89,7 @@ class SkillLegend extends Component {
                       <StarRate fontSize="small" className={classes.starSvg} />
                       <StarRate fontSize="small" className={classes.starSvg} />
                       <StarRate fontSize="small" className={classes.starSvg} />
-                      <Typography>: Toujours, au quotidien, même dans ma vie</Typography>
+                      <Typography>: Niveau 5</Typography>
                     </ListItem>
                   </List>
                 </Card>

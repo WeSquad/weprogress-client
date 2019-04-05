@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Typography, Paper, FormHelperText, Button } from '@material-ui/core';
+import { Typography, Paper, FormHelperText, Button, Divider } from '@material-ui/core';
 import { Share as ShareIcon, Edit as EditIcon } from '@material-ui/icons';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { Link } from 'react-router-dom';
-import { Radar } from 'react-chartjs-2';
+import { Radar} from 'react-chartjs-2';
 import { withStyles } from '@material-ui/core/styles';
 import { withApollo } from 'react-apollo';
 import { withSnackbar } from 'notistack';
@@ -19,6 +19,16 @@ const ASSESSMENT_RATES_QUERY = gql`
       skillsTotal
       skillsCount
       axePourcent
+      type
+    }
+  }
+`;
+
+const ASSESSMENT_SOFTSKILLS_RATES_QUERY = gql`
+  query assessmentSoftSkillsRates($id: ID!){
+    assessmentSoftSkillsRates(id: $id) {
+      skillName
+      skillRate
     }
   }
 `;
@@ -28,12 +38,15 @@ class ViewAssessment extends Component {
     super();
     this.state = {
       loadingQuery: true,
-      axesNames: [],
-      axesValues: [],
+      hardAxesNames: [],
+      hardAxesValues: [],
+      softAxesNames: [],
+      softAxesValues: [],
       openJobDialog: false,
     };
 
     this.fetchRates(props);
+    this.fetchSoftSkills(props);
   };
 
   fetchRates = async (props) => {
@@ -48,13 +61,38 @@ class ViewAssessment extends Component {
     var values = [];
 
     data.assessmentRates.forEach(rate => {
-      names.push(rate.name);
-      values.push(rate.axePourcent.toFixed(1));
+      if (rate.type === "hardSkills") {
+        names.push(rate.name);
+        values.push(rate.axePourcent.toFixed(1));
+      }
     });
 
     this.setState({
-      axesNames: names,
-      axesValues: values,
+      hardAxesNames: names,
+      hardAxesValues: values,
+      loadingQuery: false,
+    });
+  };
+
+  fetchSoftSkills = async (props) => {
+    const { client, id } = props;
+    const { data } = await client.query({
+      query: ASSESSMENT_SOFTSKILLS_RATES_QUERY,
+      variables: { "id": id },
+      fetchPolicy: "no-cache"
+    });
+
+    var names = [];
+    var values = [];
+
+    data.assessmentSoftSkillsRates.forEach(rate => {
+      names.push(rate.skillName);
+      values.push(rate.skillRate);
+    });
+
+    this.setState({
+      softAxesNames: names,
+      softAxesValues: values,
       loadingQuery: false,
     });
   };
@@ -86,36 +124,99 @@ class ViewAssessment extends Component {
 
   render() {
     const { classes } = this.props;
-    const { axesNames, axesValues, loadingQuery } = this.state;
+    const { hardAxesNames, hardAxesValues, softAxesNames, softAxesValues, loadingQuery } = this.state;
 
-    const data = {
-      labels: axesNames,
+    const hardData = {
+      labels: hardAxesNames,
       datasets: [
         {
-          label: "Mon Assessment",
+          label: "Hard skills",
           backgroundColor: fade(theme.palette.secondary.main, 0.2),
           borderColor: theme.palette.secondary.main,
           pointBackgroundColor: theme.palette.secondary.main,
           pointBorderColor: theme.palette.secondary.light,
           pointHoverBackgroundColor: theme.palette.secondary.dark,
           pointHoverBorderColor: theme.palette.secondary.light,
-          data: axesValues
+          data: hardAxesValues
         }
       ]
     };
 
-    const options = {
+
+    const softData = {
+      labels: softAxesNames,
+      datasets: [
+        {
+          label: "Soft skills",
+          backgroundColor: fade(theme.palette.primary.main, 0.2),
+          borderColor: theme.palette.primary.main,
+          pointBackgroundColor: theme.palette.primary.main,
+          pointBorderColor: theme.palette.primary.light,
+          pointHoverBackgroundColor: theme.palette.primary.dark,
+          pointHoverBorderColor: theme.palette.primary.light,
+          data: softAxesValues,
+          lineTension: 0.5
+        }
+      ]
+    };
+
+    const hardOptions = {
       responsive: true,
       legend: {
-        position: 'bottom',
+        display: false,
       },
       scale: {
         ticks: {
           beginAtZero: true,
           max: 100
+        },
+        pointLabels: {
+          fontSize: 14,
+          fontStyle: "bold"
         }
       },
-      maintainAspectRatio: false
+      maintainAspectRatio: false,
+      tooltips: {
+        callbacks: {
+          label: function(tooltipItem, data) {
+            var amount = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            return " " + amount + "%";
+          }
+        }
+      }
+    };
+
+    const softOptions = {
+      responsive: true,
+      legend: {
+        display: false,
+      },
+      scale: {
+        gridLines: {
+          circular: true,
+        },
+        angleLines: {
+          "color": "white",
+        },
+        ticks: {
+          beginAtZero: true,
+          stepSize: 1,
+          max: 5,
+          display: false,
+        },
+        pointLabels: {
+          display: false
+        }
+      },
+      maintainAspectRatio: false,
+      tooltips: {
+        callbacks: {
+          label: function(tooltipItem, data) {
+            var amount = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+            return " " + amount + " / 5";
+          }
+        }
+      }
     };
 
     return (
@@ -125,20 +226,34 @@ class ViewAssessment extends Component {
         ) : (
           <div>
             <Typography variant="h5" component="h3" className={classes.jobTitle}>
-              Vos Résultats!
+              Mon assessment
             </Typography>
             <Paper className={classes.paper}>
+              <div className={classes.actionsContainer}>
+                <Button color="secondary" variant="contained" className={classes.actionsButton} component={({...props}) => <Link to={"/editassessment/" + this.props.id} {...props} />}>
+                  <EditIcon /> Editer l'assessment
+                </Button>
+                <Button color="primary" variant="contained" className={classes.actionsButton} onClick={this.handleDialogOpen}>
+                  <ShareIcon /> Partager l'assessment
+                </Button>
+                <ShareAssessment open={this.state.openJobDialog} handleClose={this.handleDialogClose} handleSend={this.handleDialogSend} handleDialogError={this.handleDialogError} assessmentId={this.props.id} />
+              </div>
+              <div className={classes.skillTitle}>
+                <Typography variant="h6" component="h4" className={classes.skillType}>
+                  Hard Skills
+                </Typography>
+              </div>
               <div className={classes.canvasContainer}>
-                <div className={classes.actionsContainer}>
-                  <Button color="secondary" variant="contained" className={classes.actionsButton} component={({...props}) => <Link to={"/editassessment/" + this.props.id} {...props} />}>
-                    <EditIcon /> Editer l'assessment
-                  </Button>
-                  <Button color="primary" variant="contained" className={classes.actionsButton} onClick={this.handleDialogOpen}>
-                    <ShareIcon /> Partager l'assessment
-                  </Button>
-                  <ShareAssessment open={this.state.openJobDialog} handleClose={this.handleDialogClose} handleSend={this.handleDialogSend} handleDialogError={this.handleDialogError} assessmentId={this.props.id} />
-                </div>
-                <Radar data={data} options={options} />
+                <Radar data={hardData} options={hardOptions} />
+              </div>
+              <Divider />
+              <div className={classes.skillTitle}>
+                <Typography variant="h6" component="h4" className={classes.skillType}>
+                  Soft Skills
+                </Typography>
+              </div>
+              <div className={classes.canvasContainer}>
+                <Radar data={softData} options={softOptions} />
               </div>
             </Paper>
           </div>

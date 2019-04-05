@@ -37,6 +37,12 @@ const assessmentStyles = {
   jobTitle: {
     paddingBottom: theme.spacing.unit * 3,
   },
+  skillTitle: {
+    marginTop: theme.spacing.unit * 2,
+  },
+  skillType: {
+    color: theme.palette.primary.main
+  },
   listItem: {
     paddingLeft: 0,
     paddingRight: 0,
@@ -45,7 +51,7 @@ const assessmentStyles = {
     paddingTop: 5,
   },
   canvasContainer: {
-    paddingBottom: theme.spacing.unit * 5,
+    paddingBottom: theme.spacing.unit * 2,
     height: "40vh",
     [theme.breakpoints.up('sm')]: {
       height: "70vh",
