@@ -11,6 +11,7 @@ import gql from 'graphql-tag';
 import assessmentStyles from '../MakeAssessment/MakeAssessment.styles';
 import { theme } from '..';
 import ShareAssessment from './ShareAssessment';
+import PropTypes from 'prop-types';
 
 const ASSESSMENT_RATES_QUERY = gql`
   query assessmentRates($id: ID!){
@@ -123,7 +124,7 @@ class ViewAssessment extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, shared } = this.props;
     const { hardAxesNames, hardAxesValues, softAxesNames, softAxesValues, loadingQuery } = this.state;
 
     const hardData = {
@@ -225,10 +226,13 @@ class ViewAssessment extends Component {
           <FormHelperText>Chargement...</FormHelperText>
         ) : (
           <div>
+            {shared === false && (
             <Typography variant="h5" component="h3" className={classes.jobTitle}>
               Mon assessment
             </Typography>
+            )}
             <Paper className={classes.paper}>
+              {shared === false && (
               <div className={classes.actionsContainer}>
                 <Button color="secondary" variant="contained" className={classes.actionsButton} component={({...props}) => <Link to={"/editassessment/" + this.props.id} {...props} />}>
                   <EditIcon /> Editer l'assessment
@@ -238,6 +242,7 @@ class ViewAssessment extends Component {
                 </Button>
                 <ShareAssessment open={this.state.openJobDialog} handleClose={this.handleDialogClose} handleSend={this.handleDialogSend} handleDialogError={this.handleDialogError} assessmentId={this.props.id} />
               </div>
+              )}
               <div className={classes.skillTitle}>
                 <Typography variant="h6" component="h4" className={classes.skillType}>
                   Hard Skills
@@ -261,6 +266,11 @@ class ViewAssessment extends Component {
       </div>
     );
   }
+}
+
+ViewAssessment.propTypes = {
+  id: PropTypes.string,
+  shared: PropTypes.bool,
 }
 
 export default withSnackbar(withStyles(assessmentStyles)(withApollo(ViewAssessment)));

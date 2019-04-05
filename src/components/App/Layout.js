@@ -254,7 +254,7 @@ class Layout extends Component {
             )} />
             <Route exact path="/viewassessment/:id" render={({ match }) => (
               authToken? (
-                <ViewAssessment key={match.params.id} id={match.params.id} />
+                <ViewAssessment key={match.params.id} id={match.params.id} shared={false} />
               ) : (
                 <Redirect to="/signin"/>
               )

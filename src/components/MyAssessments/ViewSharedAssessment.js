@@ -1,24 +1,11 @@
 import React, { Component } from 'react';
 import { Typography, Paper, List, Grid, FormHelperText, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from '@material-ui/core';
 import { ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
-import { fade } from '@material-ui/core/styles/colorManipulator';
-import { Radar } from 'react-chartjs-2';
 import { withStyles } from '@material-ui/core/styles';
 import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 import assessmentStyles from '../MakeAssessment/MakeAssessment.styles';
-import { theme, ReadOnlySkillSet } from '..';
-
-const ASSESSMENT_RATES_QUERY = gql`
-  query assessmentRates($id: ID!){
-    assessmentRates(id: $id) {
-      name
-      skillsTotal
-      skillsCount
-      axePourcent
-    }
-  }
-`;
+import { ReadOnlySkillSet, ViewAssessment} from '..';
 
 const ASSESSMENT_DATAILS_QUERY = gql`
   query assessment($id: ID!){
@@ -60,30 +47,7 @@ class ViewSharedAssessment extends Component {
       expanded: null
     };
 
-    this.fetchRates(props);
     this.fetchDetails(props);
-  };
-
-  fetchRates = async (props) => {
-    const { client, id } = props;
-    const { data } = await client.query({
-      query: ASSESSMENT_RATES_QUERY,
-      variables: { "id": id },
-      fetchPolicy: "no-cache"
-    });
-
-    var names = [];
-    var values = [];
-
-    data.assessmentRates.forEach(rate => {
-      names.push(rate.name);
-      values.push(rate.axePourcent.toFixed(1));
-    });
-
-    this.setState({
-      axesNames: names,
-      axesValues: values
-    });
   };
 
   fetchDetails = async (props) => {
@@ -108,37 +72,7 @@ class ViewSharedAssessment extends Component {
 
   render() {
     const { classes } = this.props;
-    const { axesNames, axesValues, assessment, expanded, loadingQuery } = this.state;
-
-    const data = {
-      labels: axesNames,
-      datasets: [
-        {
-          label: "Mon Assessment",
-          backgroundColor: fade(theme.palette.secondary.main, 0.2),
-          borderColor: theme.palette.secondary.main,
-          pointBackgroundColor: theme.palette.secondary.main,
-          pointBorderColor: theme.palette.secondary.light,
-          pointHoverBackgroundColor: theme.palette.secondary.dark,
-          pointHoverBorderColor: theme.palette.secondary.light,
-          data: axesValues
-        }
-      ]
-    };
-
-    const options = {
-      responsive: true,
-      legend: {
-        position: 'bottom',
-      },
-      scale: {
-        ticks: {
-          beginAtZero: true,
-          max: 100
-        }
-      },
-      maintainAspectRatio: false
-    };
+    const { assessment, expanded, loadingQuery } = this.state;
 
     return (
       <div>
@@ -149,11 +83,7 @@ class ViewSharedAssessment extends Component {
             <Typography variant="h5" component="h3" className={classes.jobTitle}>
               Auto-Assessment de {assessment.user.fullName} sur le métier de {assessment.job.name}
             </Typography>
-            <Paper className={classes.paper}>
-              <div className={classes.canvasContainer}>
-                <Radar data={data} options={options} />
-              </div>
-            </Paper>
+            <ViewAssessment id={assessment.id} shared={true} />
             <Typography variant="h5" component="h3" className={classes.jobTitle}>
               En détails:
             </Typography>
