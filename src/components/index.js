@@ -6,6 +6,7 @@ import MyAssessments from './MyAssessments/MyAssessments';
 import SharedAssessments from './MyAssessments/SharedAssessments';
 import ViewAssessment from './MyAssessments/ViewAssessment';
 import ViewSharedAssessment from './MyAssessments/ViewSharedAssessment';
+import ViewComparedAssessments from './MyAssessments/ViewComparedAssessments';
 import EditAssessment from './EditAssessment/EditAssessment';
 import Profile from './Profile/Profile';
 import SignIn from './SignIn/SignIn';
@@ -15,4 +16,4 @@ import SkillLegend from './Skills/SkillLegend';
 import GoogleSignIn from './Google/GoogleSignIn';
 import Notifications from './Notifications/Notifications';
 
-export { App, theme, Dashboard, MakeAssessment, MyAssessments, SharedAssessments, ViewAssessment, ViewSharedAssessment, EditAssessment, SkillSet, ReadOnlySkillSet, SkillLegend, Profile, SignIn, GoogleSignIn, Notifications };
+export { App, theme, Dashboard, MakeAssessment, MyAssessments, SharedAssessments, ViewAssessment, ViewSharedAssessment, ViewComparedAssessments, EditAssessment, SkillSet, ReadOnlySkillSet, SkillLegend, Profile, SignIn, GoogleSignIn, Notifications };

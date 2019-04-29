@@ -7,7 +7,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { AppBar, Toolbar, Menu, MenuItem, IconButton, Typography, Drawer, Hidden, CssBaseline, Badge } from '@material-ui/core';
 import { Menu as MenuIcon, AccountCircle, Notifications as NotificationsIcon } from '@material-ui/icons';
 
-import { Dashboard, MakeAssessment, MyAssessments, SharedAssessments, ViewAssessment, ViewSharedAssessment, EditAssessment, SignIn, Profile, Notifications } from '..';
+import { Dashboard, MakeAssessment, MyAssessments, SharedAssessments, ViewAssessment, ViewSharedAssessment, ViewComparedAssessments, EditAssessment, SignIn, Profile, Notifications } from '..';
 import InsideDrawer from './InsideDrawer';
 import layoutStyles from './Layout.styles';
 import { AUTH_TOKEN } from '../../constants';
@@ -262,6 +262,13 @@ class Layout extends Component {
             <Route exact path="/viewsharedassessment/:id" render={({ match }) => (
               authToken? (
                 <ViewSharedAssessment key={match.params.id} id={match.params.id} />
+              ) : (
+                <Redirect to="/signin"/>
+              )
+            )} />
+            <Route exact path="/viewcomparedassessments/:firstId/:secondId" render={({ match }) => (
+              authToken? (
+                <ViewComparedAssessments key={match.params.firstId} firstId={match.params.firstId} secondId={match.params.secondId} />
               ) : (
                 <Redirect to="/signin"/>
               )
