@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, FormControl, InputLabel, Select, MenuItem, Button, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { withRouter } from 'react-router-dom';
 
 const styles = theme => ({
   form: {
@@ -38,6 +39,9 @@ class CompareAssessmentsDialog extends Component {
 
   handleClose = () => {
     this.props.handleClose();
+    if (this.state.firstAssessmentId !== "" && this.state.secondAssessmentId !== "") {
+      this.props.history.push('/viewcomparedassessments/' + this.state.firstAssessmentId + '/' + this.state.secondAssessmentId);
+    }
   }
 
   handleFirstSelected = async event => {
@@ -143,4 +147,4 @@ class CompareAssessmentsDialog extends Component {
   }
 }
 
-export default withStyles(styles)(CompareAssessmentsDialog);
+export default withStyles(styles)(withRouter(CompareAssessmentsDialog));
