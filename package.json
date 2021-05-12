@@ -11,7 +11,7 @@
     "apollo-link": "^1.2.8",
     "apollo-link-context": "^1.0.14",
     "autosuggest-highlight": "^3.1.1",
-    "chart.js": "^2.7.3",
+    "chart.js": "^2.9.4",
     "dotenv": "^6.2.0",
     "graphql": "^14.0.2",
     "notistack": "^0.4.1",
